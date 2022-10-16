@@ -313,3 +313,344 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
+
+
+#### `GET /api/users/:userId` - Fetch a specific user's information
+
+**Returns**
+
+- A success message
+- An object with the user's details (without password)
+
+**Throws**
+
+- `404` if there is no user with the specified id
+
+#### `GET /api/users?usernameContains=KEYWORD` - Gets all users whose usernames contain the keyword
+
+**Returns** 
+
+- A success message
+- An array of the details (minus password) of users who fit this criteria
+
+**Throws**
+
+- `400` if `usernameContains` is not specified
+
+
+#### `PATCH /api/freets?author=USERID&deadlineDate=DATE` - Updates all Freets that were posted by a specific user before a given date
+
+**Returns** 
+
+- A success message
+
+**Throws**
+
+- `400` if `author` or `deadlineDate` are not specified
+- `403` if the current user is not the author specified
+- `403` if the user is not logged in
+
+
+####  `GET /api/freets?author=USERID&isDeleted=BOOLEAN` - Gets all Freets posted by a specific user that have a particular deletion status
+
+**Returns** 
+
+- A success message
+- An array of the details of Freets that fit this criteria
+
+**Throws**
+
+- `400` if  `author` or `isDeleted` are not specified
+- `403` if the current user is not the author specified
+- `403` if the user is not logged in
+
+####  `GET /api/freets?author=USERID&isDeleted=BOOLEAN&deadlineDate=DATE` - Gets all Freets posted by a specific user that have a particular deletion status before a certain date
+
+**Returns** 
+
+- A success message
+- An array of the details of Freets that fit this criteria
+
+**Throws**
+
+- `400` if `author`, `isDeleted` or `deadlineDate` are not specified
+- `403` if the current user is not the author specified
+- `403` if the user is not logged in
+
+#### `GET /api/freets/:freetId` - Get a specific Freet using its id
+
+**Returns** 
+
+- A success message
+- An object with the Freet's details
+
+**Throws**
+
+- `404` if there is no Freet with the given id
+
+#### `GET /api/freets?freetContains=KEYWORD` - Gets all freets whose content contains the given keyword 
+
+**Returns** 
+
+- A success message
+- An array of the details of Freets that fit this criteria
+
+**Throws**
+
+- `400` if `freetContains` is not specified
+
+#### `GET /api/freets?parentFreet=FREETID` - Gets all comments of a particular id
+
+**Returns** 
+
+- A success message
+- An array of Freets and their details, each as an object
+
+**Throws**
+
+- `400` if `parentFreet` is not specified
+- `404` if no Freet with the id `parentFreet` exists
+
+#### `POST /api/refreets` - Add a Refreet of a specified Freet by the current user
+
+**Body**
+
+- `refreetedItem` _{Types.ObjectId}_ - The id of the Freet that was Refreeted
+
+**Returns** 
+
+- A success message
+- An object with the created refreet's details 
+
+**Throws**
+
+- `400` if  `refreetedItem` is not specified
+- `400` if the current user has already refreeted the Freet referenced by `refreetedItem`
+- `403` if there is no user logged in
+- `404` if there is no Freet with the id `refreetedItem` 
+
+#### `DELETE /api/refreets?refreetedItem=FREETID` - Delete a refreet of a specified Freet by the current user
+
+**Returns** 
+
+- A success message
+
+**Throws**
+
+- `400` if  `refreetedItem` is not specified
+- `400` if the current user has not refreeted the Freet referenced by `refreetedItem`
+- `403` if there is no user logged in
+- `404` if there is no Freet with the id `refreetedItem` 
+
+#### `GET /api/refreets?refreetedItem=FREETID` - Get all the refreets of a particular Freet
+
+**Returns** 
+
+- A success message
+- An array of Refreets and their details, each as an object
+
+**Throws**
+
+- `400` if  `refreetedItem` is not specified
+- `404`  if there is no Freet with the id `refreetedItem`
+
+#### `POST /api/likes` - Add a like of a specified Freet by the current user
+
+**Body**
+
+- `likedItem` _{Types.ObjectId}_ - The id of the Freet that was liked
+
+**Returns** 
+
+- A success message
+- An object with the created like's details 
+
+**Throws**
+
+- `400` if the `likedItem` is not specified
+- `400` if the current user has already liked the Freet referenced by `likedItem`
+- `403` if there is no user logged in
+- `404` if there is no Freet with the id `likedItem`
+
+#### `DELETE /api/likes?likedItem=FREETID` - Delete a like of a specified Freet by the current user
+
+**Returns** 
+
+- A success message
+
+**Throws**
+
+- `400` if the `likedItem` is not specified
+- `400` if the current user has not liked the Freet referenced by `likedItem`
+- `403` if there is no user logged in
+- `404` if no Freet with the id `likedItem` exists 
+
+#### `GET /api/likes?likedItem=FREETID` - Get all the likes of a particular Freet
+
+**Returns** 
+
+- A success message
+- An array of Likes and their details, each as an object
+
+**Throws**
+
+- `400` if the `likedItem` is not specified
+- `404` if no Freet with the id `likedItem` exists 
+
+#### `POST /api/downvotes` - Add a downvote of a specified Freet by the current user
+
+**Body**
+
+- `downvotedItem` _{Types.ObjectId}_ - The id of the Freet that was downvoted
+
+**Returns** 
+
+- A success message
+- An object with the created downvote's details 
+
+**Throws**
+
+- `400` if  `downvotedItem` is not specified
+- `400` if the current user has already downvoted the Freet referenced by  `downvotedItem` 
+- `403` if there is no user logged in
+- `404` if there is no Freet with the given id  `downvotedItem` 
+
+#### `DELETE /api/downvotes?downvotedItem=FREETID` - Delete a downvote of a specified Freet by the current user
+
+**Returns** 
+
+- A success message
+
+**Throws**
+
+- `400` if `downvotedItem`  is not specified
+- `400` if the current user has not downvoted the Freet referenced by `downvotedItem` 
+- `403` if there is no user logged in
+- `404` if no Freet with the id `downvotedItem` exists 
+
+#### `GET /api/downvotes?downvotedItem=FREETID` - Get all the downvotes of a particular Freet
+
+**Returns** 
+
+- A success message
+- An array of downvotes and their details, each as an object
+
+**Throws**
+
+- `400` if  `downvotedItem` is not specified
+- `404` if there is no Freet with `downvotedItem` as an id 
+
+#### `POST /api/follows` - The current user follows another user
+
+**Body**
+
+- `userBeingFollowed` _{Types.ObjectId}_ - The id of the user that is being followed
+
+**Returns** 
+
+- A success message
+- An object with the created follow's details
+
+**Throws**
+
+- `400` if `userBeingFollowed` is not specified
+- `400` if the current user has already followed the user with the id `userBeingFollowed`
+- `403` if there is no user logged in
+- `404` if no user with the id `userBeingFollowed` exists 
+
+#### `DELETE /api/follows?followedUser=USERID` - The current user unfollows another user
+
+**Returns** 
+
+- A success message
+
+**Throws**
+
+- `400` if `followedUser` is not specified
+- `400` if the current user has not followed the user with the id `followedUser`
+- `403` if there is no user logged in
+- `404` if no user with the id `followedUser` exists 
+
+#### `GET /api/follows/` - Get all the users that the current user is following
+
+**Returns** 
+
+- A success message
+- An array of users and their details (minus password), each as an object
+
+**Throws**
+
+- `403` if there is no user logged in
+
+#### `POST /api/notifications`
+
+**Body**
+
+- `notificationReceiver` _{Types.ObjectId}_ - The id of the user that has caused the notification
+- `notificationType` _{string}_ - The type of notificaiton
+- `notificationFreet` _{Types.ObjectId | undefined}_ - The id of the Freet, if any, that pertains to the notification
+
+**Returns** 
+
+- A success message
+- An object containing details of the created notification
+
+**Throws**
+
+- `400` if `notificationType` is not 'follow', 'follow_request', 'like', 'refreet', or 'comment'
+- `404` if there is no user with the id `notificationReceiver`
+
+#### `PUT /api/notifications/:notificationId` - Updates a specific notification
+
+**Body** 
+
+- `accepted_status` _{boolean}_ - Whether the user has accepted the follow request pertaining to a notification
+
+**Returns** 
+
+- A success message
+- An object with the updated notification's details
+
+**Throws**
+
+- `400` if `accepted_status` is not specified
+- `403` if there is no user logged in
+- `404` if there is no notification with the specified id
+
+#### `GET /api/notifications` - Get all notifications received by the current user
+
+**Returns** 
+
+- A success message
+- An array of notifications
+
+**Throws**
+
+- `403` if there is no user logged in
+
+#### `GET /api/hiddenFreets` - Get all Freets hidden by the current user
+
+**Returns** 
+
+- A success message
+- An array of Freets that were hidden
+
+**Throws**
+
+- `403` if there is no user logged in
+
+#### `POST /api/hiddenFreets` - Hide a Freet
+
+**Body** 
+
+- `freetToHide` _{Types.ObjectId}_ - The id of the Freet that is being hidden
+
+**Returns** 
+
+- A success message
+- An object with details about the hidden Freet
+
+**Throws**
+
+- `403` if there is no user logged in
+- `404` if freetToHide does not exist
