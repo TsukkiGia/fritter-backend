@@ -467,7 +467,6 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if the `likedItem` is not specified
 - `400` if the current user has already liked the Freet referenced by `likedItem`
 - `403` if there is no user logged in
 - `404` if there is no Freet with the id `likedItem`
@@ -480,7 +479,6 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if the `likedItem` is not specified
 - `400` if the current user has not liked the Freet referenced by `likedItem`
 - `403` if there is no user logged in
 - `404` if no Freet with the id `likedItem` exists 
@@ -494,7 +492,6 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if the `likedItem` is not specified
 - `404` if no Freet with the id `likedItem` exists 
 
 #### `POST /api/downvotes` - Add a downvote of a specified Freet by the current user
