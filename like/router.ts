@@ -17,6 +17,9 @@ const router = express.Router();
  */
 router.get(
   '/',
+  [
+    freetValidator.isLikedFreetExists
+  ],
   async (req: Request, res: Response, next: NextFunction) => {
     if (req.query.freetId === undefined) {
       next();
