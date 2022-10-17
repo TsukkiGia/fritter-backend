@@ -1,5 +1,5 @@
 import type {HydratedDocument} from 'mongoose';
-import type {Like, PopulatedLike} from './model';
+import type {Like} from './model';
 
 type LikeResponse = {
   _id: string;
@@ -8,16 +8,11 @@ type LikeResponse = {
 };
 
 const constructLikeResponse = (like: HydratedDocument<Like>): LikeResponse =>
-//   Const likeCopy: PopulatedLike = {
-//     ...like.toObject({
-//       versionKey: false
-//     })
-//   };
-//   const {username} = likeCopy.likerUser;
+
   ({
     _id: like._id.toString(),
-    liker: like.liker,
-    likedItem: like.likedItem
+    liker: like.liker.toString(),
+    likedItem: like.likedItem.toString()
   });
 export {
   constructLikeResponse

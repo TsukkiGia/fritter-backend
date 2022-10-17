@@ -1,5 +1,4 @@
 import type {NextFunction, Request, Response} from 'express';
-import {Router} from 'express';
 import express from 'express';
 import * as userValidator from '../user/middleware';
 import * as likeValidator from './middleware';
@@ -31,29 +30,6 @@ router.get(
 );
 
 /**
- * Checks if the current user has liked a Freet
- *
- * @name GET /api/likes/hasCurrentUserLiked?freetId=id
- *
- * @return Boolean that indicates if the current user has liked a specific Freet
- */
-router.get(
-  '/hasCurrentUserLikedFreet',
-  [
-    userValidator.isUserLoggedIn
-  ],
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (req.query.freetId === undefined) {
-      next();
-      return;
-    }
-
-    const like = await LikeCollection.findLike(req.session.userId as string, req.query.freetId as string);
-    res.status(200).json(like !== null);
-  }
-);
-
-/**
  * Posts a like by the current user for a particular Freet
  *
  * @name POST /api/likes
@@ -66,6 +42,7 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
+    freetValidator.isLikedFreetExists,
     likeValidator.doesLikeNotExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {
@@ -90,6 +67,7 @@ router.delete(
   '/',
   [
     userValidator.isUserLoggedIn,
+    freetValidator.isLikedFreetExists,
     likeValidator.doesLikeExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {

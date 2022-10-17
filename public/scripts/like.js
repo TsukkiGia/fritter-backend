@@ -22,9 +22,3 @@ function unlikeFreet(fields) {
     .then(showResponse)
     .catch(showResponse);
 }
-
-function hasCurrentUserLikedFreet(fields) {
-  fetch(`/api/likes/hasCurrentUserLikedFreet?freetId=${fields.freetId}`)
-    .then(showResponse)
-    .catch(showResponse);
-}
