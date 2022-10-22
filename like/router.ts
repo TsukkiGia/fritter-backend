@@ -18,14 +18,9 @@ const router = express.Router();
 router.get(
   '/',
   [
-    freetValidator.isLikedFreetExists
+    freetValidator.doesFreetExistGeneral
   ],
   async (req: Request, res: Response, next: NextFunction) => {
-    if (req.query.freetId === undefined) {
-      next();
-      return;
-    }
-
     const likesForFreet = await LikeCollection.getLikesOfItem(req.query.freetId as string);
     const response = likesForFreet.map(util.constructLikeResponse);
     res.status(200).json(response);
@@ -45,7 +40,7 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isLikedFreetExists,
+    freetValidator.doesFreetExistGeneral,
     likeValidator.doesLikeNotExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {
@@ -70,7 +65,7 @@ router.delete(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isLikedFreetExists,
+    freetValidator.doesFreetExistGeneral,
     likeValidator.doesLikeExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {

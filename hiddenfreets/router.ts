@@ -13,7 +13,7 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isLikedFreetExists,
+    freetValidator.doesFreetExistGeneral,
     hiddenFreetValidator.isFreetHidden
   ],
   async (req: Request, res: Response, next: NextFunction) => {

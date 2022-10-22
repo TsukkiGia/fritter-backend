@@ -11,14 +11,9 @@ const router = express.Router();
 router.get(
   '/',
   [
-    freetValidator.isLikedFreetExists
+    freetValidator.doesFreetExistGeneral
   ],
   async (req: Request, res: Response, next: NextFunction) => {
-    if (req.query.freetId === undefined) {
-      next();
-      return;
-    }
-
     const refreetsForFreet = await RefreetCollection.getRefreetsofItem(req.query.freetId as string);
     const response = refreetsForFreet.map(util.constructRefreetResponse);
     res.status(200).json(response);
@@ -29,7 +24,7 @@ router.post(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isLikedFreetExists,
+    freetValidator.doesFreetExistGeneral,
     refreetValidator.doesRefreetNotExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {
@@ -46,7 +41,7 @@ router.delete(
   '/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isLikedFreetExists,
+    freetValidator.doesFreetExistGeneral,
     refreetValidator.doesRefreetExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {

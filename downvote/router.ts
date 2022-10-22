@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/',
   [
-    freetValidator.isLikedFreetExists
+    freetValidator.doesFreetExistGeneral
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const downvotesForFreet = await DownvoteCollection.getDownvotesOfItem(req.query.freetId as string);
@@ -21,7 +21,7 @@ router.get('/',
 router.post('/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isLikedFreetExists,
+    freetValidator.doesFreetExistGeneral,
     downvoteValidator.doesDownvoteNotExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +36,7 @@ router.post('/',
 router.delete('/',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isLikedFreetExists,
+    freetValidator.doesFreetExistGeneral,
     downvoteValidator.doesDownvoteExist
   ],
   async (req: Request, res: Response, next: NextFunction) => {

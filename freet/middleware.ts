@@ -23,7 +23,7 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
 /**
  * Checks if a freet with freetId is req.params exists
  */
-const isLikedFreetExists = async (req: Request, res: Response, next: NextFunction) => {
+const doesFreetExistGeneral = async (req: Request, res: Response, next: NextFunction) => {
   const freetId = (req.query.freetId ?? req.body.freetId) as string;
   const validFormat = Types.ObjectId.isValid(freetId);
   const freet = validFormat ? await FreetCollection.findOne(freetId) : '';
@@ -82,5 +82,5 @@ export {
   isValidFreetContent,
   isFreetExists,
   isValidFreetModifier,
-  isLikedFreetExists
+  doesFreetExistGeneral
 };
