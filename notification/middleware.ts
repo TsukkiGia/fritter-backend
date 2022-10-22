@@ -43,6 +43,7 @@ const doesNotificationExist = async (req: Request, res: Response, next: NextFunc
     res.status(400).json({
       error: 'Provided Notification ID is not a valid ID.'
     });
+    return;
   }
 
   const notification = await NotificationCollection.findOneByNotificationId(new Types.ObjectId(notificationId));
