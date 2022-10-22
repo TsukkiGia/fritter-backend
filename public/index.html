@@ -5,6 +5,7 @@
   <meta name="author" content="6.170 Staff">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/scripts/follow.js"></script>
   <script src="/scripts/downvote.js"></script>
   <script src="/scripts/refreet.js"></script>
   <script src="/scripts/freet.js"></script>
@@ -200,6 +201,29 @@
             <input id="freetId" name="freetId">
           </div>
           <input type="submit" value="Remove Downvote From Freet">
+        </form>
+
+        <form id="follow-user">
+          <h3>Follow a User</h3>
+          <div>
+            <label for="followedUser">User ID:</label>
+            <input id="followedUser" name="followedUser">
+          </div>
+          <input type="submit" value="Follow User">
+        </form>
+
+        <form id="unfollow-user">
+          <h3>Unfollow a User</h3>
+          <div>
+            <label for="userId">User ID:</label>
+            <input id="userId" name="userId">
+          </div>
+          <input type="submit" value="Unfollow User">
+        </form>
+
+        <form id="get-following-list">
+          <h3>Get Following List</h3>
+          <input type="submit" value="Get Follow List">
         </form>
         
       </div>

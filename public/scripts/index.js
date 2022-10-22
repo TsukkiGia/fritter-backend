@@ -49,7 +49,10 @@ const formsAndHandlers = {
   'view-refreets-for-freet': viewRefreetsForFreet,
   'view-downvotes-for-freet': getDownvotesForFreet,
   'downvote-freet': downvoteFreet,
-  'remove-downvote-from-freet': removeDownvoteFromFreet
+  'remove-downvote-from-freet': removeDownvoteFromFreet,
+  'follow-user': followUser,
+  'unfollow-user': unfollowUser,
+  'get-following-list': getFollowingList
 };
 
 // Attach handlers to forms
