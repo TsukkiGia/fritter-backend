@@ -46,7 +46,10 @@ const formsAndHandlers = {
   'unlike-freet': unlikeFreet,
   'refreet-freet': refreet,
   'unrefreet-freet': unrefreet,
-  'view-refreets-for-freet': viewRefreetsForFreet
+  'view-refreets-for-freet': viewRefreetsForFreet,
+  'view-downvotes-for-freet': getDownvotesForFreet,
+  'downvote-freet': downvoteFreet,
+  'remove-downvote-from-freet': removeDownvoteFromFreet
 };
 
 // Attach handlers to forms
