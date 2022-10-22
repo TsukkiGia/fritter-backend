@@ -1,7 +1,6 @@
 import type {Request, Response, NextFunction} from 'express';
 import NotificationCollection from './collection';
 import UserCollection from '../user/collection';
-import FreetCollection from '../freet/collection';
 import {Types} from 'mongoose';
 
 const doesReceivingUserExist = async (req: Request, res: Response, next: NextFunction) => {
@@ -73,7 +72,6 @@ const isNotificationModifierValid = async (req: Request, res: Response, next: Ne
 
 const isNotificationStatusValid = async (req: Request, res: Response, next: NextFunction) => {
   const hasAcceptedFollowRequest = req.body.hasAcceptedFollowRequest as string;
-  console.log(hasAcceptedFollowRequest);
   if (hasAcceptedFollowRequest !== 'true' && hasAcceptedFollowRequest !== 'false') {
     res.status(403).json({
       error: 'Notification status is invalid.'

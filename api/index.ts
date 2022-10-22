@@ -16,6 +16,7 @@ import {refreetRouter} from '../refreet/router';
 import {downvoteRouter} from '../downvote/router';
 import {followRouter} from '../follow/router';
 import {notificationRouter} from '../notification/router';
+import {hiddenFreetRouter} from '../hiddenfreets/router';
 
 // Load environmental variables
 dotenv.config({});
@@ -86,6 +87,7 @@ app.use('/api/refreets', refreetRouter);
 app.use('/api/downvotes', downvoteRouter);
 app.use('/api/follows', followRouter);
 app.use('/api/notifications', notificationRouter);
+app.use('/api/hiddenfreets', hiddenFreetRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

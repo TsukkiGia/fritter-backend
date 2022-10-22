@@ -55,7 +55,9 @@ const formsAndHandlers = {
   'get-following-list': getFollowingList,
   'post-notification': postNotification,
   'respond-follow-notification': updateNotification,
-  'get-notifications': viewNotificationsForUser
+  'get-notifications': viewNotificationsForUser,
+  'hide-freet': hideFreet,
+  'get-hidden-freets': getHiddenFreetsForUser
 };
 
 // Attach handlers to forms

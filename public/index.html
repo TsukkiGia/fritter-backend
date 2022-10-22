@@ -5,6 +5,7 @@
   <meta name="author" content="6.170 Staff">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/scripts/hiddenfreet.js"></script>
   <script src="/scripts/notification.js"></script>
   <script src="/scripts/follow.js"></script>
   <script src="/scripts/downvote.js"></script>
@@ -260,6 +261,20 @@
         <form id="get-notifications">
           <h3>Get Notifications</h3>
           <input type="submit" value="Get Notifications">
+        </form>
+
+        <form id="hide-freet">
+          <h3>Hide a Freet</h3>
+          <div>
+            <label for="freetId">Freet ID:</label>
+            <input id="freetId" name="freetId">
+          </div>
+          <input type="submit" value="Hide Freet">
+        </form>
+
+        <form id="get-hidden-freets">
+          <h3>Get Hidden Freets</h3>
+          <input type="submit" value="Get Hidden Freets">
         </form>
         
       </div>
