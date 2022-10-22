@@ -5,6 +5,7 @@
   <meta name="author" content="6.170 Staff">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/scripts/notification.js"></script>
   <script src="/scripts/follow.js"></script>
   <script src="/scripts/downvote.js"></script>
   <script src="/scripts/refreet.js"></script>
@@ -224,6 +225,41 @@
         <form id="get-following-list">
           <h3>Get Following List</h3>
           <input type="submit" value="Get Follow List">
+        </form>
+
+        <form id="post-notification">
+          <h3>Post a Notification</h3>
+          <div>
+            <label for="notificationReceiver">Receiver ID:</label>
+            <input id="notificationReceiver" name="notificationReceiver">
+          </div>
+          <div>
+            <label for="notificationType">Notification Type:</label>
+            <input id="notificationType" name="notificationType">
+          </div>
+          <div>
+            <label for="notificationFreet">Notification Freet:</label>
+            <input id="notificationFreet" name="notificationFreet">
+          </div>
+          <input type="submit" value="Post Notification">
+        </form>
+
+        <form id="respond-follow-notification">
+          <h3>Respond to Follow Request</h3>
+          <div>
+            <label for="notificationId">Notification ID:</label>
+            <input id="notificationId" name="notificationId">
+          </div>
+          <div>
+            <label for="hasAcceptedFollowRequest">Accept or Reject:</label>
+            <input id="hasAcceptedFollowRequest" name="hasAcceptedFollowRequest">
+          </div>
+          <input type="submit" value="Respond to Follow Reques">
+        </form>
+
+        <form id="get-notifications">
+          <h3>Get Notifications</h3>
+          <input type="submit" value="Get Notifications">
         </form>
         
       </div>

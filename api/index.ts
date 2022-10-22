@@ -15,6 +15,7 @@ import {likeRouter} from '../like/router';
 import {refreetRouter} from '../refreet/router';
 import {downvoteRouter} from '../downvote/router';
 import {followRouter} from '../follow/router';
+import {notificationRouter} from '../notification/router';
 
 // Load environmental variables
 dotenv.config({});
@@ -84,6 +85,7 @@ app.use('/api/likes', likeRouter);
 app.use('/api/refreets', refreetRouter);
 app.use('/api/downvotes', downvoteRouter);
 app.use('/api/follows', followRouter);
+app.use('/api/notifications', notificationRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

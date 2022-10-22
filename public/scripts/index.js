@@ -52,7 +52,10 @@ const formsAndHandlers = {
   'remove-downvote-from-freet': removeDownvoteFromFreet,
   'follow-user': followUser,
   'unfollow-user': unfollowUser,
-  'get-following-list': getFollowingList
+  'get-following-list': getFollowingList,
+  'post-notification': postNotification,
+  'respond-follow-notification': updateNotification,
+  'get-notifications': viewNotificationsForUser
 };
 
 // Attach handlers to forms
