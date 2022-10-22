@@ -3,17 +3,17 @@ import {Schema, model} from 'mongoose';
 
 export type Refreet = {
   _id: Types.ObjectId;
-  refreeter: string;
-  refreetedItem: string;
+  refreeter: Types.ObjectId;
+  refreetedItem: Types.ObjectId;
 };
 
 const RefreetSchema = new Schema({
   refreeter: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   refreetedItem: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   }
 });

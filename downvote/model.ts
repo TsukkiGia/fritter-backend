@@ -3,17 +3,17 @@ import {Schema, model} from 'mongoose';
 
 export type Downvote = {
   _id: Types.ObjectId;
-  downvoter: string;
-  downvotedItem: string;
+  downvoter: Types.ObjectId;
+  downvotedItem: Types.ObjectId;
 };
 
 const DownvoteSchema = new Schema({
   downvoter: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   downvotedItem: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   }
 });

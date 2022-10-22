@@ -59,7 +59,7 @@ const doesNotificationExist = async (req: Request, res: Response, next: NextFunc
 const isNotificationModifierValid = async (req: Request, res: Response, next: NextFunction) => {
   const {notificationId} = req.params;
   const notification = await NotificationCollection.findOneByNotificationId(new Types.ObjectId(notificationId));
-  const userId = notification.notificationReceiver;
+  const userId = notification.notificationReceiver.toString();
   if (req.session.userId !== userId) {
     res.status(403).json({
       error: 'Cannot modify other users\' notifications.'

@@ -3,17 +3,17 @@ import {Schema, model} from 'mongoose';
 
 export type Follow = {
   _id: Types.ObjectId;
-  followedUser: string;
-  follower: string;
+  followedUser: Types.ObjectId;
+  follower: Types.ObjectId;
 };
 
 const FollowSchema = new Schema({
   followedUser: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   follower: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   }
 });

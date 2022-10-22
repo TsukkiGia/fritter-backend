@@ -3,17 +3,17 @@ import {Schema, model} from 'mongoose';
 
 export type HiddenFreet = {
   _id: Types.ObjectId;
-  hider: string;
-  hiddenItem: string;
+  hider: Types.ObjectId;
+  hiddenItem: Types.ObjectId;
 };
 
 const HiddenFreetSchema = new Schema({
   hider: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   hiddenItem: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   }
 });

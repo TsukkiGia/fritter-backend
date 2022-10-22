@@ -37,7 +37,7 @@ class NotificationCollection {
     const {notificationReceiver, notificationSender} = notification;
     notification.hasAcceptedFollowRequest = response;
     if (response) {
-      await FollowCollection.followUser(notificationReceiver, notificationSender);
+      await FollowCollection.followUser(notificationReceiver.toString(), notificationSender.toString());
     }
 
     await notification.save();

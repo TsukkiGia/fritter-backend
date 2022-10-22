@@ -4,17 +4,17 @@ import {Schema, model} from 'mongoose';
 
 export type Notification = {
   _id: Types.ObjectId;
-  notificationReceiver: string;
+  notificationReceiver: Types.ObjectId;
   notificationType: string;
   notificationTime: Date;
-  notificationSender: string;
-  notificationFreet: string;
+  notificationSender: Types.ObjectId;
+  notificationFreet: Types.ObjectId;
   hasAcceptedFollowRequest: boolean;
 };
 
 const NotificationSchema = new Schema({
   notificationReceiver: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   notificationType: {
@@ -26,11 +26,11 @@ const NotificationSchema = new Schema({
     required: true
   },
   notificationSender: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   notificationFreet: {
-    type: String
+    type: Schema.Types.ObjectId
   },
   hasAcceptedFollowRequest: {
     type: Boolean

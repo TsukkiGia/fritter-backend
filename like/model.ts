@@ -3,17 +3,17 @@ import {Schema, model} from 'mongoose';
 
 export type Like = {
   _id: Types.ObjectId;
-  liker: string;
-  likedItem: string;
+  liker: Types.ObjectId;
+  likedItem: Types.ObjectId;
 };
 
 const LikeSchema = new Schema({
   liker: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   likedItem: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   }
 });
