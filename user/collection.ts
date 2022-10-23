@@ -18,10 +18,11 @@ class UserCollection {
    * @param {string} password - The password of the user
    * @return {Promise<HydratedDocument<User>>} - The newly created user
    */
-  static async addOne(username: string, password: string): Promise<HydratedDocument<User>> {
+  static async addOne(username: string, password: string, displayName: string): Promise<HydratedDocument<User>> {
     const dateJoined = new Date();
-
-    const user = new UserModel({username, password, dateJoined});
+    const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'];
+    const profilePictureColor = colors[Math.floor(Math.random() * colors.length)];
+    const user = new UserModel({username, password, dateJoined, displayName, profilePictureColor, preferredLanguages: ['english'], isPrivate: false});
     await user.save(); // Saves user to MongoDB
     return user;
   }
@@ -44,6 +45,11 @@ class UserCollection {
    */
   static async findOneByUsername(username: string): Promise<HydratedDocument<User>> {
     return UserModel.findOne({username: new RegExp(`^${username.trim()}$`, 'i')});
+  }
+
+  static async findManyByUsername(username: string): Promise<Array<HydratedDocument<User>>> {
+    const regex = new RegExp(username, 'i');
+    return UserModel.find({username: {$regex: regex}});
   }
 
   /**
@@ -75,6 +81,10 @@ class UserCollection {
 
     if (userDetails.username) {
       user.username = userDetails.username as string;
+    }
+
+    if (userDetails.isPrivate) {
+      user.isPrivate = userDetails.isPrivate === 'true';
     }
 
     await user.save();

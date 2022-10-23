@@ -85,7 +85,7 @@ router.post(
     userValidator.isValidPassword
   ],
   async (req: Request, res: Response) => {
-    const user = await UserCollection.addOne(req.body.username, req.body.password);
+    const user = await UserCollection.addOne(req.body.username, req.body.password, req.body.displayName);
     req.session.userId = user._id.toString();
     res.status(201).json({
       message: `Your account was created successfully. You have been logged in as ${user.username}`,
@@ -145,6 +145,34 @@ router.delete(
     res.status(200).json({
       message: 'Your account has been deleted successfully.'
     });
+  }
+);
+
+router.get(
+  '/:userId',
+  [
+    userValidator.doesUserExist
+  ],
+  async (req: Request, res: Response) => {
+    const {userId} = req.params;
+    const user = await UserCollection.findOneByUserId(userId);
+    res.status(200).json({
+      message: 'User was fetched successfully.',
+      user: util.constructUserResponse(user)
+    });
+  }
+);
+
+router.get(
+  '/',
+  [
+    userValidator.isValidUsername
+  ],
+  async (req: Request, res: Response) => {
+    const username = req.query.username as string;
+    const users = await UserCollection.findManyByUsername(username);
+    const response = users.map(util.constructUserResponse);
+    res.status(200).json(response);
   }
 );
 

@@ -30,7 +30,7 @@ const isCurrentSessionUserExists = async (req: Request, res: Response, next: Nex
  */
 const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
   const usernameRegex = /^\w+$/i;
-  if (!usernameRegex.test(req.body.username)) {
+  if (!usernameRegex.test(req.body.username ?? (req.query.username as string))) {
     res.status(400).json({
       error: {
         username: 'Username must be a nonempty alphanumeric string.'
@@ -153,6 +153,26 @@ const isAuthorExists = async (req: Request, res: Response, next: NextFunction) =
   next();
 };
 
+const doesUserExist = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.params.userId) {
+    res.status(400).json({
+      error: 'Provided author username must be nonempty.'
+    });
+    return;
+  }
+
+  const validFormat = Types.ObjectId.isValid(req.params.userId);
+  const user = validFormat ? await UserCollection.findOneByUserId(req.params.userId) : '';
+  if (!user) {
+    res.status(404).json({
+      error: `A user with username ${req.params.userId} does not exist.`
+    });
+    return;
+  }
+
+  next();
+};
+
 export {
   isCurrentSessionUserExists,
   isUserLoggedIn,
@@ -161,5 +181,6 @@ export {
   isAccountExists,
   isAuthorExists,
   isValidUsername,
-  isValidPassword
+  isValidPassword,
+  doesUserExist
 };

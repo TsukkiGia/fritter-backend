@@ -57,7 +57,9 @@ const formsAndHandlers = {
   'respond-follow-notification': updateNotification,
   'get-notifications': viewNotificationsForUser,
   'hide-freet': hideFreet,
-  'get-hidden-freets': getHiddenFreetsForUser
+  'get-hidden-freets': getHiddenFreetsForUser,
+  'get-user-info': getUser,
+  'search-users': searchUsers
 };
 
 // Attach handlers to forms
