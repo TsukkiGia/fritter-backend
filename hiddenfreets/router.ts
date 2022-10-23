@@ -4,7 +4,6 @@ import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as hiddenFreetValidator from './middleware';
 import * as util from './util';
-import {Types} from 'mongoose';
 import HiddenFreetCollection from './collection';
 
 const router = express.Router();

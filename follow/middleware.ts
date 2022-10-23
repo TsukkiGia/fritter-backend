@@ -40,14 +40,8 @@ const doesUserToBeFollowedExist = async (req: Request, res: Response, next: Next
     return;
   }
 
-  if (!Types.ObjectId.isValid(followedUser)) {
-    res.status(400).json({
-      error: 'Provided followed user ID is not a valid ID.'
-    });
-    return;
-  }
-
-  const user = await UserCollection.findOneByUserId(followedUser);
+  const validFormat = Types.ObjectId.isValid(followedUser);
+  const user = validFormat ? await UserCollection.findOneByUserId(followedUser) : '';
   if (!user) {
     res.status(404).json({
       error: `A user with ID ${followedUser} does not exist.`

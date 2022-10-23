@@ -12,14 +12,8 @@ const doesReceivingUserExist = async (req: Request, res: Response, next: NextFun
     return;
   }
 
-  if (!Types.ObjectId.isValid(receivingUser)) {
-    res.status(400).json({
-      error: 'Provided receiving user ID is not a valid ID.'
-    });
-    return;
-  }
-
-  const user = await UserCollection.findOneByUserId(receivingUser);
+  const validFormat = Types.ObjectId.isValid(receivingUser);
+  const user = validFormat ? await UserCollection.findOneByUserId(receivingUser) : '';
   if (!user) {
     res.status(404).json({
       error: `A user with ID ${receivingUser} does not exist.`
@@ -39,14 +33,8 @@ const doesNotificationExist = async (req: Request, res: Response, next: NextFunc
     return;
   }
 
-  if (!Types.ObjectId.isValid(notificationId)) {
-    res.status(400).json({
-      error: 'Provided Notification ID is not a valid ID.'
-    });
-    return;
-  }
-
-  const notification = await NotificationCollection.findOneByNotificationId(new Types.ObjectId(notificationId));
+  const validFormat = Types.ObjectId.isValid(notificationId);
+  const notification = validFormat ? await NotificationCollection.findOneByNotificationId(new Types.ObjectId(notificationId)) : '';
   if (!notification) {
     res.status(404).json({
       error: `A notification with ID ${notificationId} does not exist.`
@@ -74,7 +62,7 @@ const isNotificationModifierValid = async (req: Request, res: Response, next: Ne
 const isNotificationStatusValid = async (req: Request, res: Response, next: NextFunction) => {
   const hasAcceptedFollowRequest = req.body.hasAcceptedFollowRequest as string;
   if (hasAcceptedFollowRequest !== 'true' && hasAcceptedFollowRequest !== 'false') {
-    res.status(403).json({
+    res.status(400).json({
       error: 'Notification status is invalid.'
     });
     return;
@@ -117,7 +105,7 @@ const isNotificationFormattedWell = async (req: Request, res: Response, next: Ne
       return;
     }
   } else {
-    res.status(403).json({
+    res.status(400).json({
       error: 'Provided notification type is invalid.'
     });
     return;

@@ -25,6 +25,14 @@ const isFreetExists = async (req: Request, res: Response, next: NextFunction) =>
  */
 const doesFreetExistGeneral = async (req: Request, res: Response, next: NextFunction) => {
   const freetId = (req.query.freetId ?? req.body.freetId) as string;
+  if (!freetId) {
+    res.status(400).json({
+      error: {
+        freetNotSpecified: 'FreetId must not be empty'
+      }
+    });
+  }
+
   const validFormat = Types.ObjectId.isValid(freetId);
   const freet = validFormat ? await FreetCollection.findOne(freetId) : '';
   if (!freet) {
