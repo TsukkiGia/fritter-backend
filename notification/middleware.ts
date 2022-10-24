@@ -64,7 +64,7 @@ const isNotificationFollowRequestAnswerValid = async (req: Request, res: Respons
   const hasAcceptedFollowRequest = req.body.hasAcceptedFollowRequest as string;
   if (hasAcceptedFollowRequest !== 'true' && hasAcceptedFollowRequest !== 'false') {
     res.status(400).json({
-      error: 'Notification follow request response is invalid.'
+      error: 'Notification follow request response is invalid. Must be true or false.'
     });
     return;
   }
@@ -101,7 +101,7 @@ const isNotificationFormattedWell = async (req: Request, res: Response, next: Ne
     const isValid = Types.ObjectId.isValid(notificationFreet);
     const freet = isValid ? await FreetCollection.findOne(notificationFreet) : '';
     if (!freet) {
-      res.status(400).json({
+      res.status(404).json({
         error: 'Provided notification freet does not exist.'
       });
       return;

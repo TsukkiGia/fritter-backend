@@ -66,7 +66,7 @@ const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
 const isValidPrivacySetting = async (req: Request, res: Response, next: NextFunction) => {
   if (req.body.isPrivate) {
     if (req.body.isPrivate !== 'true' && req.body.isPrivate !== 'false') {
-      res.status(401).json({
+      res.status(400).json({
         error: {
           password: 'isPrivate must be true or false.'
         }
@@ -76,7 +76,7 @@ const isValidPrivacySetting = async (req: Request, res: Response, next: NextFunc
 
     const user = await UserCollection.findOneByUserId(req.session.userId);
     if (user.isPrivate && req.body.isPrivate === 'true') {
-      res.status(401).json({
+      res.status(400).json({
         error: {
           isPrivate: 'Current user is already private.'
         }
@@ -85,7 +85,7 @@ const isValidPrivacySetting = async (req: Request, res: Response, next: NextFunc
     }
 
     if (!user.isPrivate && req.body.isPrivate === 'false') {
-      res.status(401).json({
+      res.status(400).json({
         error: {
           isPrivate: 'Current user is already public.'
         }

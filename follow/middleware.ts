@@ -6,7 +6,7 @@ import {Types} from 'mongoose';
 const isCurrentUserFollowing = async (req: Request, res: Response, next: NextFunction) => {
   const follow = await FollowCollection.findFollowRecord(req.session.userId, req.query.followedUser as string);
   if (!follow) {
-    res.status(401).json({
+    res.status(400).json({
       error: {
         followNotFound: `Current user has not followed user with ID ${req.query.followedUser as string}`
       }
@@ -21,7 +21,7 @@ const isCurrentUserNotFollowing = async (req: Request, res: Response, next: Next
   const follow = await FollowCollection.findFollowRecord(req.session.userId, req.body.followedUser as string);
   if (follow) {
     const message = follow.hasAcceptedFollowRequest ? `Current user has already made a request to followed user with ID ${req.body.followedUser as string}` : `Current user has already followed user with ID ${req.body.followedUser as string}`;
-    res.status(401).json({
+    res.status(400).json({
       error: {
         followAlreadyExists: message
       }
@@ -79,7 +79,7 @@ const doesRequestExist = async (req: Request, res: Response, next: NextFunction)
   const currentUser = req.session.userId as string;
   const follow = await FollowCollection.findFollowRecord(requestedUser, currentUser);
   if (!follow || follow.hasAcceptedFollowRequest === undefined || follow.hasAcceptedFollowRequest === null) {
-    res.status(401).json({
+    res.status(400).json({
       error: `User ${requestedUser} has not requested a follow.`
     });
     return;
@@ -93,7 +93,7 @@ const hasRequestBeenRespondedTo = async (req: Request, res: Response, next: Next
   const currentUser = req.session.userId as string;
   const follow = await FollowCollection.findFollowRecord(requestedUser, currentUser);
   if (follow.hasAcceptedFollowRequest === 'true' || follow.hasAcceptedFollowRequest === 'false') {
-    res.status(401).json({
+    res.status(400).json({
       error: `You have already responded to user ${requestedUser} follow request.`
     });
     return;
@@ -112,7 +112,7 @@ const isValidRequestResponse = async (req: Request, res: Response, next: NextFun
   }
 
   if (response !== 'true' && response !== 'false') {
-    res.status(401).json({
+    res.status(400).json({
       error: 'Your follow request response must either be true or false.'
     });
     return;
