@@ -25,11 +25,18 @@ const router = express.Router();
  * @throws {404} - If no user has given authorId
  *
  */
+
+// Five possibilities
+
+// nothing - get all Freets
+// author - get all Freets by an author
+// author, deadline month, deadline day, deadline year and isDeleted status - get all Freets by an author posted before given date that
+// have the given deletion status
 router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
     // Check if authorId query parameter was supplied
-    if (req.query.author !== undefined) {
+    if (req.query.author !== undefined || req.query.deadlineYear !== undefined || req.query.freetContains !== undefined) {
       next();
       return;
     }
@@ -38,15 +45,72 @@ router.get(
     const response = allFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
   },
-  [
-    userValidator.isAuthorExists
-  ],
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.query.deadlineYear !== undefined || req.query.freetContains !== undefined) {
+      next();
+      return;
+    }
+
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
     const response = authorFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
+  },
+  [
+    userValidator.isUserLoggedIn
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.query.freetContains !== undefined) {
+      next();
+      return;
+    }
+
+    const deadlineDate = new Date(parseInt(req.query.deadlineYear as string, 10), parseInt(req.query.deadlineMonth as string, 10), (parseInt(req.query.deadlineDay as string, 10), 0, 0, 0, 0));
+    const freets = await FreetCollection.findFreetsForANBDeletion(req.session.userId, deadlineDate);
+    const response = freets.map(util.constructFreetResponse);
+    res.status(200).json(response);
+  },
+  async (req: Request, res: Response, next: NextFunction) => {
+    const freets = await FreetCollection.findManyByContents(req.query.freetContains as string);
+    const response = freets.map(util.constructFreetResponse);
+    res.status(200).json(response);
   }
 );
+
+router.get(
+  '/freetBin',
+  [
+    userValidator.isUserLoggedIn
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req.session.userId as string) ?? '';
+    const freets = await FreetCollection.findDeletedFreetsForBin(userId);
+    const response = freets.map(util.constructFreetResponse);
+    res.status(200).json(response);
+  });
+
+router.get(
+  '/:freetId',
+  [
+    freetValidator.isFreetExists
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const freet = await FreetCollection.findOne(req.params.freetId);
+    res.status(201).json({
+      message: 'Freet was retrieved successfully.',
+      freet: util.constructFreetResponse(freet)
+    });
+  });
+
+router.get(
+  '/:freetId/comments',
+  [
+    freetValidator.isFreetExists
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const freets = await FreetCollection.findCommentsOfFreet(req.params.freetId);
+    const response = freets.map(util.constructFreetResponse);
+    res.status(200).json(response);
+  });
 
 /**
  * Create a new freet.
@@ -76,27 +140,19 @@ router.post(
   }
 );
 
-/**
- * Delete a freet
- *
- * @name DELETE /api/freets/:id
- *
- * @return {string} - A success message
- * @throws {403} - If the user is not logged in or is not the author of
- *                 the freet
- * @throws {404} - If the freetId is not valid
- */
-router.delete(
-  '/:freetId?',
+router.post(
+  '/:freetId/comments',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isFreetExists,
-    freetValidator.isValidFreetModifier
+    freetValidator.isValidFreetContent
   ],
   async (req: Request, res: Response) => {
-    await FreetCollection.deleteOne(req.params.freetId);
-    res.status(200).json({
-      message: 'Your freet was deleted successfully.'
+    const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
+    const freet = await FreetCollection.addOneComment(userId, req.body.content, req.params.freetId, req.body.commentPropagation === 'true');
+
+    res.status(201).json({
+      message: 'Your freet comment was created successfully.',
+      freet: util.constructFreetResponse(freet)
     });
   }
 );
@@ -119,11 +175,10 @@ router.put(
   [
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
-    freetValidator.isValidFreetModifier,
-    freetValidator.isValidFreetContent
+    freetValidator.isValidFreetModifier
   ],
   async (req: Request, res: Response) => {
-    const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content);
+    const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content, req.body.toDelete, req.body.viewer);
     res.status(200).json({
       message: 'Your freet was updated successfully.',
       freet: util.constructFreetResponse(freet)

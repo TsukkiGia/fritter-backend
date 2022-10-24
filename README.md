@@ -192,11 +192,86 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` if `author` is not given
 - `404` if `author` is not a recognized username of any user
 
+#### `GET /api/freets?deadlineDay=DAY&deadlineMonth=MONTH&deadlineYear=YEAR` - Get freets by current user for A New Beginning
+
+**Returns**
+
+- An array of freets created by current user that were posted before the deadline date
+
+**Throws**
+
+- `400` if `author` is not given
+- `404` if `author` is not a recognized username of any user
+
+#### `GET /api/freets/freetbin` - Get freets by author
+
+**Returns**
+
+- An array of freets created by current user that are in the Freet Bin
+
+**Throws**
+
+- `400` if `author` is not given
+- `404` if `author` is not a recognized username of any user
+
+#### `GET /api/freets?freetContains=KEYWORD` - Gets all freets whose content contains the given keyword 
+
+**Returns** 
+
+- A success message
+- An array of the details of Freets that fit this criteria
+
+**Throws**
+
+- `400` if `freetContains` is not specified
+
+#### `GET /api/freets?parentFreet=FREETID` - Gets all comments of a particular id
+
+**Returns** 
+
+- A success message
+- An array of Freets and their details, each as an object
+
+**Throws**
+
+- `400` if `parentFreet` is not specified
+- `404` if no Freet with the id `parentFreet` exists
+
 #### `POST /api/freets` - Create a new freet
 
 **Body**
 
 - `content` _{string}_ - The content of the freet
+
+**Returns**
+
+- A success message
+- A object with the created freet
+
+**Throws**
+
+- `403` if the user is not logged in
+- `400` If the freet content is empty or a stream of empty spaces
+- `413` If the freet content is more than 140 characters long
+
+#### `POST /api/freets/comments` - Create a new comment freet
+
+**Body**
+
+- `content` _{string}_ - The content of the freet
+- `parentFreet` _{string}_ - The id of the original freet
+
+**Returns**
+
+- A success message
+- A object with the created freet
+
+#### `GET /api/freets/comments?freetId=PARENTFREET` - Get comment freets for freet with given id
+
+**Body**
+
+- `content` _{string}_ - The content of the freet
+- `parentFreet` _{string}_ - The id of the original freet
 
 **Returns**
 
@@ -239,6 +314,17 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not the author of the freet
 - `400` if the new freet content is empty or a stream of empty spaces
 - `413` if the new freet content is more than 140 characters long
+
+#### `GET /api/freets/:freetId` - Get a specific Freet using its id
+
+**Returns** 
+
+- A success message
+- An object with the Freet's details
+
+**Throws**
+
+- `404` if there is no Freet with the given id
 
 #### `POST /api/users/session` - Sign in user
 
@@ -292,6 +378,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `username` _{string}_ - The user's username
 - `password` _{string}_ - The user's password
+- `isPrivate` _{string}_ - Whether the user is private
 
 **Returns**
 
@@ -336,80 +423,6 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `400` if `usernameContains` is not specified
-
-
-#### `PATCH /api/freets?author=USERID&deadlineDate=DATE` - Updates all Freets that were posted by a specific user before a given date
-
-**Returns** 
-
-- A success message
-
-**Throws**
-
-- `400` if `author` or `deadlineDate` are not specified
-- `403` if the current user is not the author specified
-- `403` if the user is not logged in
-
-
-####  `GET /api/freets?author=USERID&isDeleted=BOOLEAN` - Gets all Freets posted by a specific user that have a particular deletion status
-
-**Returns** 
-
-- A success message
-- An array of the details of Freets that fit this criteria
-
-**Throws**
-
-- `400` if  `author` or `isDeleted` are not specified
-- `403` if the current user is not the author specified
-- `403` if the user is not logged in
-
-####  `GET /api/freets?author=USERID&isDeleted=BOOLEAN&deadlineDate=DATE` - Gets all Freets posted by a specific user that have a particular deletion status before a certain date
-
-**Returns** 
-
-- A success message
-- An array of the details of Freets that fit this criteria
-
-**Throws**
-
-- `400` if `author`, `isDeleted` or `deadlineDate` are not specified
-- `403` if the current user is not the author specified
-- `403` if the user is not logged in
-
-#### `GET /api/freets/:freetId` - Get a specific Freet using its id
-
-**Returns** 
-
-- A success message
-- An object with the Freet's details
-
-**Throws**
-
-- `404` if there is no Freet with the given id
-
-#### `GET /api/freets?freetContains=KEYWORD` - Gets all freets whose content contains the given keyword 
-
-**Returns** 
-
-- A success message
-- An array of the details of Freets that fit this criteria
-
-**Throws**
-
-- `400` if `freetContains` is not specified
-
-#### `GET /api/freets?parentFreet=FREETID` - Gets all comments of a particular id
-
-**Returns** 
-
-- A success message
-- An array of Freets and their details, each as an object
-
-**Throws**
-
-- `400` if `parentFreet` is not specified
-- `404` if no Freet with the id `parentFreet` exists
 
 #### `POST /api/refreets` - Add a Refreet of a specified Freet by the current user
 

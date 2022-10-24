@@ -14,6 +14,10 @@ export type Freet = {
   dateCreated: Date;
   content: string;
   dateModified: Date;
+  timeOfDeletion: Date;
+  parentFreet: Types.ObjectId;
+  viewers: string[];
+  commentPropagation: boolean;
 };
 
 export type PopulatedFreet = {
@@ -22,6 +26,10 @@ export type PopulatedFreet = {
   dateCreated: Date;
   content: string;
   dateModified: Date;
+  timeOfDeletion: Date;
+  parentFreet: Types.ObjectId;
+  viewers: string[];
+  commentPropagation: boolean;
 };
 
 // Mongoose schema definition for interfacing with a MongoDB table
@@ -49,6 +57,19 @@ const FreetSchema = new Schema<Freet>({
   dateModified: {
     type: Date,
     required: true
+  },
+  viewers: {
+    type: [String],
+    required: true
+  },
+  timeOfDeletion: {
+    type: Date
+  },
+  parentFreet: {
+    type: Schema.Types.ObjectId
+  },
+  commentPropagation: {
+    type: Boolean
   }
 });
 

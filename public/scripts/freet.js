@@ -5,6 +5,12 @@
  * e.g. for createUser, fields has properites 'username' and 'password'
  */
 
+function viewFreetBin(fields) {
+  fetch('/api/freets/freetbin')
+    .then(showResponse)
+    .catch(showResponse);
+}
+
 function viewAllFreets(fields) {
   fetch('/api/freets')
     .then(showResponse)
@@ -13,6 +19,30 @@ function viewAllFreets(fields) {
 
 function viewFreetsByAuthor(fields) {
   fetch(`/api/freets?author=${fields.author}`)
+    .then(showResponse)
+    .catch(showResponse);
+}
+
+function searchFreets(fields) {
+  fetch(`/api/freets?freetContains=${fields.freetContains}`)
+    .then(showResponse)
+    .catch(showResponse);
+}
+
+function aNewBeginning(fields) {
+  fetch(`/api/freets?deadlineDay=${fields.deadlineDay}&deadlineMonth=${fields.deadlineMonth}&deadlineYear=${fields.deadlineYear}`)
+    .then(showResponse)
+    .catch(showResponse);
+}
+
+function getFreet(fields) {
+  fetch(`/api/freets/${fields.id}`)
+    .then(showResponse)
+    .catch(showResponse);
+}
+
+function getFreetComments(fields) {
+  fetch(`/api/freets/${fields.id}/comments`)
     .then(showResponse)
     .catch(showResponse);
 }
@@ -29,8 +59,9 @@ function editFreet(fields) {
     .catch(showResponse);
 }
 
-function deleteFreet(fields) {
-  fetch(`/api/freets/${fields.id}`, {method: 'DELETE'})
+function createFreetComment(fields) {
+  fetch(`/api/freets/${fields.id}/comments`, {method: 'POST', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
     .then(showResponse)
     .catch(showResponse);
 }
+

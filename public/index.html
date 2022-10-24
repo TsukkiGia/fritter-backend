@@ -102,9 +102,41 @@
         </form>
 
         <form id="view-all-freets">
-            <h3>View All Freets</h3>
-            <input type="submit" value="View All Freets">
-          </form>
+          <h3>View All Freets</h3>
+          <input type="submit" value="View All Freets">
+        </form>
+
+        <form id="search-freets">
+          <h3>Search Freets</h3>
+          <div>
+            <label for="freetContains">Freet Contains:</label>
+            <input id="freetContains" name="freetContains">
+          </div>
+          <input type="submit" value="Search Freets">
+        </form>
+
+        <form id="view-freet-bin">
+          <h3>View Freet Bin</h3>
+          <input type="submit" value="View Freet Bin">
+        </form>
+
+        <form id="get-freet">
+          <h3>Get Freet</h3>
+          <div>
+            <label for="id">ID:</label>
+            <input id="id" name="id">
+          </div>
+          <input type="submit" value="Get Freet">
+        </form>
+
+        <form id="get-freet-comments">
+          <h3>Get Comments of Freet</h3>
+          <div>
+            <label for="id">Parent Freet ID:</label>
+            <input id="id" name="id">
+          </div>
+          <input type="submit" value="Get Comments of Freet">
+        </form>
 
         <form id="view-freets-by-author">
           <h3>View Freets By Author</h3>
@@ -134,16 +166,49 @@
             <label for="content">Content:</label>
             <textarea id="content" name="content"></textarea>
           </div>
+          <div>
+            <label for="toDelete">Delete?</label>
+            <input id="toDelete" name="toDelete">
+          </div>
+          <div>
+            <label for="viewer">Viewer</label>
+            <input id="viewer" name="viewer">
+          </div>
           <input type="submit" value="Edit Freet">
         </form>
 
-        <form id="delete-freet">
-          <h3>Delete Freet</h3>
+        <form id="a-new-beginning">
+          <h3>A New Beginning</h3>
           <div>
-            <label for="id">ID:</label>
+            <label for="deadlineDay">Deadline Day:</label>
+            <input id="deadlineDay" name="deadlineDay">
+          </div>
+          <div>
+            <label for="deadlineMonth">Deadline Month:</label>
+            <input id="deadlineMonth" name="deadlineMonth">
+          </div>
+          <div>
+            <label for="deadlineYear">Deadline Year:</label>
+            <input id="deadlineYear" name="deadlineYear">
+          </div>
+          <input type="submit" value="ANB">
+        </form>
+
+        <form id="create-freet-comment">
+          <h3>Create Freet Comment</h3>
+          <div>
+            <label for="id">Parent Freet ID:</label>
             <input id="id" name="id">
           </div>
-          <input type="submit" value="Delete Freet">
+          <div>
+            <label for="content">Content:</label>
+            <textarea id="content" name="content"></textarea>
+          </div>
+          <div>
+            <label for="commentPropagation">Propagate Comment?</label>
+            <input id="commentPropagation" name="commentPropagation">
+          </div>
+          <input type="submit" value="Create Comment Freet">
         </form>
 
         <form id="like-freet">

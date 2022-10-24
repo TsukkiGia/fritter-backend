@@ -1,3 +1,4 @@
+
 import type {HydratedDocument, Types} from 'mongoose';
 import type {Freet} from './model';
 import FreetModel from './model';
@@ -25,10 +26,53 @@ class FreetCollection {
       authorId,
       dateCreated: date,
       content,
-      dateModified: date
+      dateModified: date,
+      viewers: []
     });
     await freet.save(); // Saves freet to MongoDB
     return freet.populate('authorId');
+  }
+
+  static async addOneComment(authorId: Types.ObjectId | string, content: string, parentFreet: string, commentPropagation: boolean): Promise<HydratedDocument<Freet>> {
+    const date = new Date();
+    const freet = new FreetModel({
+      authorId,
+      dateCreated: date,
+      content,
+      dateModified: date,
+      viewers: [],
+      parentFreet,
+      commentPropagation
+    });
+    await freet.save(); // Saves freet to MongoDB
+    return freet.populate('authorId');
+  }
+
+  static async findManyByContents(contents: string): Promise<Array<HydratedDocument<Freet>>> {
+    const regex = new RegExp(contents, 'i');
+    return FreetModel.find({content: {$regex: regex}, timeOfDeletion: null});
+  }
+
+  static async findCommentsOfFreet(parentFreet: string): Promise<Array<HydratedDocument<Freet>>> {
+    return FreetModel.find({parentFreet, timeOfDeletion: null});
+  }
+
+  // Gets freets that were deleted after a specific date (will be 30 days before)
+  static async findDeletedFreetsForBin(userId: string): Promise<Array<HydratedDocument<Freet>>> {
+    const deadlineDate = new Date();
+    deadlineDate.setDate(deadlineDate.getDate() - 30);
+    return FreetModel.find({authorId: userId,
+      timeOfDeletion: {
+        $gt: deadlineDate
+      }});
+  }
+
+  // Gets freets that are not deleted before a specific date
+  static async findFreetsForANBDeletion(userId: string, deadlineDate: Date): Promise<Array<HydratedDocument<Freet>>> {
+    return FreetModel.find({authorId: userId, timeOfDeletion: null,
+      dateCreated: {
+        $lt: deadlineDate
+      }});
   }
 
   /**
@@ -48,7 +92,7 @@ class FreetCollection {
    */
   static async findAll(): Promise<Array<HydratedDocument<Freet>>> {
     // Retrieves freets and sorts them from most to least recent
-    return FreetModel.find({}).sort({dateModified: -1}).populate('authorId');
+    return FreetModel.find({timeOfDeletion: null}).sort({dateModified: -1}).populate('authorId');
   }
 
   /**
@@ -59,7 +103,7 @@ class FreetCollection {
    */
   static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Freet>>> {
     const author = await UserCollection.findOneByUsername(username);
-    return FreetModel.find({authorId: author._id}).populate('authorId');
+    return FreetModel.find({authorId: author._id, timeOfDeletion: null}).populate('authorId');
   }
 
   /**
@@ -69,10 +113,28 @@ class FreetCollection {
    * @param {string} content - The new content of the freet
    * @return {Promise<HydratedDocument<Freet>>} - The newly updated freet
    */
-  static async updateOne(freetId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
+  static async updateOne(freetId: Types.ObjectId | string, content: string, toDelete: string, viewerId: string): Promise<HydratedDocument<Freet>> {
     const freet = await FreetModel.findOne({_id: freetId});
-    freet.content = content;
     freet.dateModified = new Date();
+
+    if (content) {
+      freet.content = content;
+    }
+
+    if (viewerId) {
+      const {viewers} = freet;
+      if (!viewers.includes(viewerId)) {
+        viewers.push(viewerId);
+        freet.viewers = viewers;
+      }
+    }
+
+    if (toDelete === 'true') {
+      freet.timeOfDeletion = new Date();
+    } else if (toDelete === 'false') {
+      freet.timeOfDeletion = null;
+    }
+
     await freet.save();
     return freet.populate('authorId');
   }
