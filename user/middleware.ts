@@ -29,14 +29,16 @@ const isCurrentSessionUserExists = async (req: Request, res: Response, next: Nex
  * Checks if a username in req.body is valid, that is, it matches the username regex
  */
 const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
-  const usernameRegex = /^\w+$/i;
-  if (!usernameRegex.test(req.body.username ?? (req.query.username as string))) {
-    res.status(400).json({
-      error: {
-        username: 'Username must be a nonempty alphanumeric string.'
-      }
-    });
-    return;
+  if (req.body.username ?? (req.query.username as string)) {
+    const usernameRegex = /^\w+$/i;
+    if (!usernameRegex.test(req.body.username ?? (req.query.username as string))) {
+      res.status(400).json({
+        error: {
+          username: 'Username must be a nonempty alphanumeric string.'
+        }
+      });
+      return;
+    }
   }
 
   next();
@@ -46,14 +48,16 @@ const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
  * Checks if a password in req.body is valid, that is, at 6-50 characters long without any spaces
  */
 const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
-  const passwordRegex = /^\S+$/;
-  if (!passwordRegex.test(req.body.password)) {
-    res.status(400).json({
-      error: {
-        password: 'Password must be a nonempty string.'
-      }
-    });
-    return;
+  if (req.body.password) {
+    const passwordRegex = /^\S+$/;
+    if (!passwordRegex.test(req.body.password)) {
+      res.status(400).json({
+        error: {
+          password: 'Password must be a nonempty string.'
+        }
+      });
+      return;
+    }
   }
 
   next();
@@ -85,20 +89,24 @@ const isAccountExists = async (req: Request, res: Response, next: NextFunction) 
  * Checks if a username in req.body is already in use
  */
 const isUsernameNotAlreadyInUse = async (req: Request, res: Response, next: NextFunction) => {
-  const user = await UserCollection.findOneByUsername(req.body.username);
+  if (req.body.username) {
+    const user = await UserCollection.findOneByUsername(req.body.username);
 
-  // If the current session user wants to change their username to one which matches
-  // the current one irrespective of the case, we should allow them to do so
-  if (!user || (user?._id.toString() === req.session.userId)) {
-    next();
-    return;
+    // If the current session user wants to change their username to one which matches
+    // the current one irrespective of the case, we should allow them to do so
+    if (!user || (user?._id.toString() === req.session.userId)) {
+      next();
+      return;
+    }
+
+    res.status(409).json({
+      error: {
+        username: 'An account with this username already exists.'
+      }
+    });
   }
 
-  res.status(409).json({
-    error: {
-      username: 'An account with this username already exists.'
-    }
-  });
+  next();
 };
 
 /**

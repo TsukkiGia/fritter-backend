@@ -1,6 +1,7 @@
 import type {Types, HydratedDocument} from 'mongoose';
 import moment from 'moment';
 import type {Freet, PopulatedFreet} from '../freet/model';
+import UserCollection from '../user/collection';
 
 // Update this if you add a property to the Freet type!
 type FreetResponse = {
@@ -22,6 +23,29 @@ type FreetResponse = {
  * @returns {string} - formatted date as string
  */
 const formatDate = (date: Date): string => moment(date).format('MMMM Do YYYY, h:mm:ss a');
+
+async function hideFreetsFromPrivateUsers(freets: Freet[]): Promise<Freet[]> {
+  const filtered_freets = [];
+  const usersPromises = [];
+  for (const freet of freets) {
+    const {authorId} = freet;
+    usersPromises.push(UserCollection.findOneByUserId(authorId));
+  }
+
+  const userToPrivate = new Map<string, boolean>();
+  const users = await Promise.all(usersPromises);
+  for (const user of users) {
+    userToPrivate.set(user._id.toString(), user.isPrivate);
+  }
+
+  for (const freet of freets) {
+    if (!userToPrivate.get(freet.authorId.toString())) {
+      filtered_freets.push(freet);
+    }
+  }
+
+  return filtered_freets;
+}
 
 /**
  * Transform a raw Freet object from the database into an object
@@ -52,5 +76,6 @@ const constructFreetResponse = (freet: HydratedDocument<Freet>): FreetResponse =
 };
 
 export {
-  constructFreetResponse
+  constructFreetResponse,
+  hideFreetsFromPrivateUsers
 };

@@ -70,7 +70,7 @@ router.get(
     res.status(200).json(response);
   },
   async (req: Request, res: Response, next: NextFunction) => {
-    const freets = await FreetCollection.findManyByContents(req.query.freetContains as string);
+    const freets = await util.hideFreetsFromPrivateUsers(await FreetCollection.findManyByContents(req.query.freetContains as string));
     const response = freets.map(util.constructFreetResponse);
     res.status(200).json(response);
   }
