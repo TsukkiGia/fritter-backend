@@ -12,7 +12,6 @@ export type User = {
   username: string;
   displayName: string;
   profilePictureColor: string;
-  preferredLanguages: string[];
   isPrivate: boolean;
   password: string;
   dateJoined: Date;
@@ -43,10 +42,6 @@ const UserSchema = new Schema({
   },
   profilePictureColor: {
     type: String,
-    required: true
-  },
-  preferredLanguages: {
-    type: [String],
     required: true
   },
   isPrivate: {

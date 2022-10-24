@@ -63,6 +63,40 @@ const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+const isValidPrivacySetting = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.body.isPrivate) {
+    if (req.body.isPrivate !== 'true' && req.body.isPrivate !== 'false') {
+      res.status(401).json({
+        error: {
+          password: 'isPrivate must be true or false.'
+        }
+      });
+      return;
+    }
+
+    const user = await UserCollection.findOneByUserId(req.session.userId);
+    if (user.isPrivate && req.body.isPrivate === 'true') {
+      res.status(401).json({
+        error: {
+          isPrivate: 'Current user is already private.'
+        }
+      });
+      return;
+    }
+
+    if (!user.isPrivate && req.body.isPrivate === 'false') {
+      res.status(401).json({
+        error: {
+          isPrivate: 'Current user is already public.'
+        }
+      });
+      return;
+    }
+  }
+
+  next();
+};
+
 /**
  * Checks if a user with username and password in req.body exists
  */
@@ -190,5 +224,6 @@ export {
   isAuthorExists,
   isValidUsername,
   isValidPassword,
-  doesUserExist
+  doesUserExist,
+  isValidPrivacySetting
 };

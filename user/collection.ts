@@ -22,7 +22,7 @@ class UserCollection {
     const dateJoined = new Date();
     const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'];
     const profilePictureColor = colors[Math.floor(Math.random() * colors.length)];
-    const user = new UserModel({username, password, dateJoined, displayName, profilePictureColor, preferredLanguages: ['english'], isPrivate: false});
+    const user = new UserModel({username, password, dateJoined, displayName, profilePictureColor, isPrivate: false});
     await user.save(); // Saves user to MongoDB
     return user;
   }

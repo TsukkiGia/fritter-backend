@@ -9,7 +9,6 @@ type UserResponse = {
   dateJoined: string;
   displayName: string;
   isPrivate: string;
-  preferredLanguages: string[];
   profilePictureColor: string;
 };
 
@@ -42,7 +41,6 @@ const constructUserResponse = (user: HydratedDocument<User>): UserResponse => {
     dateJoined: formatDate(user.dateJoined),
     displayName: userCopy.displayName.toString(),
     isPrivate: userCopy.isPrivate.toString(),
-    preferredLanguages: userCopy.preferredLanguages,
     profilePictureColor: userCopy.profilePictureColor.toString()
   };
 };
