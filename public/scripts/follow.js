@@ -22,3 +22,9 @@ function getFollowingList(fields) {
     .then(showResponse)
     .catch(showResponse);
 }
+
+function respondFollowRequest(fields) {
+  fetch('/api/follows', {method: 'PUT', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
+    .then(showResponse)
+    .catch(showResponse);
+}

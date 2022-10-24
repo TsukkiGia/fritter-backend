@@ -70,7 +70,7 @@ router.put(
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const answer = req.body.hasAcceptedFollowRequest === 'true';
-    const notification = await NotificationCollection.respondToFollowRequestNotification(new Types.ObjectId(req.params.notificationId), answer);
+    const notification = await NotificationCollection.updateFollowRequestNotification(new Types.ObjectId(req.params.notificationId), answer);
     res.status(200).json({
       message: `You responded ${req.body.hasAcceptedFollowRequest as string} to follow request successfully.`,
       notification: util.constructFollowRequestNotificationResponse(notification)

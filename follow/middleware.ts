@@ -35,7 +35,28 @@ const doesUserToBeFollowedExist = async (req: Request, res: Response, next: Next
   const followedUser = (req.query.followedUser as string) ?? (req.body.followedUser as string);
   if (!followedUser) {
     res.status(400).json({
-      error: 'Provided followed user username must be nonempty.'
+      error: 'Provided followed user id must be nonempty.'
+    });
+    return;
+  }
+
+  const validFormat = Types.ObjectId.isValid(followedUser);
+  const user = validFormat ? await UserCollection.findOneByUserId(followedUser) : '';
+  if (!user) {
+    res.status(404).json({
+      error: `A user with ID ${followedUser} does not exist.`
+    });
+    return;
+  }
+
+  next();
+};
+
+const doesRequestedUserExist = async (req: Request, res: Response, next: NextFunction) => {
+  const followedUser = req.body.requestedUserId as string;
+  if (!followedUser) {
+    res.status(400).json({
+      error: 'Provided followed user id must be nonempty.'
     });
     return;
   }
@@ -55,5 +76,6 @@ const doesUserToBeFollowedExist = async (req: Request, res: Response, next: Next
 export {
   isCurrentUserFollowing,
   isCurrentUserNotFollowing,
-  doesUserToBeFollowedExist
+  doesUserToBeFollowedExist,
+  doesRequestedUserExist
 };

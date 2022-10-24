@@ -4,6 +4,7 @@ import * as userValidator from '../user/middleware';
 import * as followValidator from './middleware';
 import * as util from './util';
 import FollowCollection from './collection';
+import UserCollection from '../user/collection';
 
 const router = express.Router();
 
@@ -19,6 +20,22 @@ router.get(
   }
 );
 
+router.put(
+  '/',
+  [
+    userValidator.isUserLoggedIn,
+    followValidator.doesRequestedUserExist
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const follow = await FollowCollection.respondToFollowRequest(req.session.userId, req.body.requestedUserId, req.body.hasAcceptedFollowRequest === 'true');
+    const message = req.body.hasAcceptedFollowRequest === 'true' ? 'You successfully accepted a follow request' : 'You successfully rejected a follow request';
+    res.status(201).json({
+      message,
+      follow: util.constructFollowResponse(follow)
+    });
+  }
+);
+
 router.post(
   '/',
   [
@@ -28,9 +45,11 @@ router.post(
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = (req.session.userId as string) ?? '';
-    const follow = await FollowCollection.followUser(req.body.followedUser, userId);
+    const followedUser = await UserCollection.findOneByUserId(req.body.followedUser as string);
+    const follow = await FollowCollection.followUser(req.body.followedUser, userId, followedUser.isPrivate);
+    const message = followedUser.isPrivate ? 'You successfully made a follow request' : 'You followed a user successfully.';
     res.status(201).json({
-      message: 'You followed a user successfully.',
+      message,
       follow: util.constructFollowResponse(follow)
     });
   }

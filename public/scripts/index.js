@@ -59,6 +59,7 @@ const formsAndHandlers = {
   'follow-user': followUser,
   'unfollow-user': unfollowUser,
   'get-following-list': getFollowingList,
+  'respond-follow-request': respondFollowRequest,
   'post-notification': postNotification,
   'respond-follow-notification': updateNotification,
   'get-notifications': viewNotificationsForUser,
