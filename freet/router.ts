@@ -213,7 +213,7 @@ router.put(
   '/:freetId?',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isFreetExists,
+    freetValidator.doesFreetExistGeneralDelete,
     freetValidator.isValidFreetModifier,
     freetValidator.isValidToDelete,
     freetValidator.isEditedFreetContentValid

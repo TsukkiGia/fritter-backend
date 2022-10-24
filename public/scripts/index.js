@@ -53,6 +53,8 @@ const formsAndHandlers = {
   'refreet-freet': refreet,
   'unrefreet-freet': unrefreet,
   'view-refreets-for-freet': viewRefreetsForFreet,
+  'update-refreets-of-freet': updateRefreets,
+  'view-refreets-by-user': viewRefreetsForUser,
   'view-downvotes-for-freet': getDownvotesForFreet,
   'downvote-freet': downvoteFreet,
   'remove-downvote-from-freet': removeDownvoteFromFreet,

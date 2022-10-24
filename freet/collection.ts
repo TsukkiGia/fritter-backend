@@ -85,6 +85,10 @@ class FreetCollection {
     return FreetModel.findOne({_id: freetId, timeOfDeletion: null}).populate('authorId');
   }
 
+  static async findOneExisted(freetId: Types.ObjectId | string): Promise<HydratedDocument<Freet>> {
+    return FreetModel.findOne({_id: freetId}).populate('authorId');
+  }
+
   /**
    * Get all the freets in the database
    *

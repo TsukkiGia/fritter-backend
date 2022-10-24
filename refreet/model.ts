@@ -5,6 +5,7 @@ export type Refreet = {
   _id: Types.ObjectId;
   refreeter: Types.ObjectId;
   refreetedItem: Types.ObjectId;
+  freetDeleted: boolean;
 };
 
 const RefreetSchema = new Schema({
@@ -14,6 +15,10 @@ const RefreetSchema = new Schema({
   },
   refreetedItem: {
     type: Schema.Types.ObjectId,
+    required: true
+  },
+  freetDeleted: {
+    type: Boolean,
     required: true
   }
 });

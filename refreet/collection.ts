@@ -4,7 +4,7 @@ import RefreetModel from './model';
 
 class RefreetCollection {
   static async addRefreet(refreeter: string, refreetedItem: string): Promise<HydratedDocument<Refreet>> {
-    const refreet = new RefreetModel({refreeter, refreetedItem});
+    const refreet = new RefreetModel({refreeter, refreetedItem, freetDeleted: false});
     await refreet.save();
     return refreet;
   }
@@ -25,6 +25,15 @@ class RefreetCollection {
 
   static async findRefreet(refreeter: string, refreetedItem: string): Promise<HydratedDocument<Refreet>> {
     return RefreetModel.findOne({refreeter, refreetedItem});
+  }
+
+  static async findRefreetsByRefreeter(refreeter: string): Promise<Array<HydratedDocument<Refreet>>> {
+    return RefreetModel.find({refreeter, freetDeleted: false});
+  }
+
+  static async updateRefreetDeletionStatus(refreetedItem: string, deletionStatus: boolean): Promise<boolean> {
+    const refreets = await RefreetModel.updateMany({refreetedItem}, {$set: {freetDeleted: deletionStatus}});
+    return refreets !== null;
   }
 }
 

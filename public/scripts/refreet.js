@@ -11,6 +11,18 @@ function viewRefreetsForFreet(fields) {
     .catch(showResponse);
 }
 
+function viewRefreetsForUser(fields) {
+  fetch(`/api/refreets?userId=${fields.userId}`)
+    .then(showResponse)
+    .catch(showResponse);
+}
+
+function updateRefreets(fields) {
+  fetch('/api/refreets', {method: 'PUT', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
+    .then(showResponse)
+    .catch(showResponse);
+}
+
 function refreet(fields) {
   fetch('/api/refreets', {method: 'POST', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
     .then(showResponse)
