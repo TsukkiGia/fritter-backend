@@ -4,6 +4,7 @@ import FreetCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as util from './util';
+import UserCollection from '../user/collection';
 
 const router = express.Router();
 
@@ -90,6 +91,12 @@ router.get(
       return;
     }
 
+    const user = await UserCollection.findOneByUsername(req.query.author as string);
+    if (!user) {
+      res.status(404).json({error: 'User with this username does not exist.'});
+      return;
+    }
+
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
     const response = authorFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
@@ -125,7 +132,7 @@ router.get(
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const freet = await FreetCollection.findOne(req.params.freetId);
-    res.status(201).json({
+    res.status(200).json({
       message: 'Freet was retrieved successfully.',
       freet: util.constructFreetResponse(freet)
     });
@@ -212,7 +219,7 @@ router.put(
     freetValidator.isEditedFreetContentValid
   ],
   async (req: Request, res: Response) => {
-    const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content, req.body.toDelete, req.body.viewer);
+    const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content, req.body.toDelete, req.session.userId);
     res.status(200).json({
       message: 'Your freet was updated successfully.',
       freet: util.constructFreetResponse(freet)

@@ -189,7 +189,6 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `author` is not given
 - `404` if `author` is not a recognized username of any user
 
 #### `GET /api/freets?deadlineDay=DAY&deadlineMonth=MONTH&deadlineYear=YEAR` - Get freets by current user for A New Beginning
@@ -200,8 +199,9 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `author` is not given
-- `404` if `author` is not a recognized username of any user
+- `400` if either `deadlineDay`,  `deadlineMonth` or  `deadlineYear` are not given
+- `400` if date is not valid
+- `403` if the user is not logged in
 
 #### `GET /api/freets/freetbin` - Get freets by author
 
@@ -211,8 +211,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `author` is not given
-- `404` if `author` is not a recognized username of any user
+- `403` if user is not logged in
 
 #### `GET /api/freets?freetContains=KEYWORD` - Gets all freets whose content contains the given keyword 
 
@@ -223,9 +222,10 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `freetContains` is not specified
+- `400` If `freetContains` is empty or a stream of empty spaces
+- `413` If `freetContains` is more than 140 characters long
 
-#### `GET /api/freets?parentFreet=FREETID` - Gets all comments of a particular id
+#### `GET /api/freets/:freetId/comments` - Gets all comments of a Freet with a particular id
 
 **Returns** 
 
@@ -234,8 +234,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `parentFreet` is not specified
-- `404` if no Freet with the id `parentFreet` exists
+- `404` if no Freet with the id `freetId` exists
 
 #### `POST /api/freets` - Create a new freet
 
@@ -254,24 +253,13 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` If the freet content is empty or a stream of empty spaces
 - `413` If the freet content is more than 140 characters long
 
-#### `POST /api/freets/comments` - Create a new comment freet
+#### `POST /api/freets/:freetId/comments` - Create a new comment freet for a Freet
 
 **Body**
 
 - `content` _{string}_ - The content of the freet
 - `parentFreet` _{string}_ - The id of the original freet
-
-**Returns**
-
-- A success message
-- A object with the created freet
-
-#### `GET /api/freets/comments?freetId=PARENTFREET` - Get comment freets for freet with given id
-
-**Body**
-
-- `content` _{string}_ - The content of the freet
-- `parentFreet` _{string}_ - The id of the original freet
+- `commentPropagation` {string} - Whether the comment should be propagated to followers' feeds
 
 **Returns**
 
@@ -281,26 +269,18 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
+- `404` if no Freet with the id `freetId` exists
 - `400` If the freet content is empty or a stream of empty spaces
+- `400` If `commentPropagation` is not specified
+- `400` If `commentPropagation` is not 'true' or 'false'
 - `413` If the freet content is more than 140 characters long
-
-#### `DELETE /api/freets/:freetId?` - Delete an existing freet
-
-**Returns**
-
-- A success message
-
-**Throws**
-
-- `403` if the user is not logged in
-- `403` if the user is not the author of the freet
-- `404` if the freetId is invalid
 
 #### `PUT /api/freets/:freetId?` - Update an existing freet
 
 **Body**
 
 - `content` _{string}_ - The new content of the freet
+- `toDelete`  _{string} - Whether the current Freet should be deleted
 
 **Returns**
 
@@ -310,9 +290,10 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
-- `404` if the freetId is invalid
+- `404` if no Freet with the id `freetId` exists
 - `403` if the user is not the author of the freet
 - `400` if the new freet content is empty or a stream of empty spaces
+- `400` If `toDelete` is not 'true' or 'false'
 - `413` if the new freet content is more than 140 characters long
 
 #### `GET /api/freets/:freetId` - Get a specific Freet using its id
@@ -359,6 +340,7 @@ This renders the `index.html` file that will be used to interact with the backen
 **Body**
 
 - `username` _{string}_ - The user's username
+- `displayName` _{string}_ - The user's display name
 - `password` _{string}_ - The user's password
 
 **Returns**
@@ -374,7 +356,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 #### `PUT /api/users` - Update a user's profile
 
-**Body** _(no need to add fields that are not being changed)_
+**Body** 
 
 - `username` _{string}_ - The user's username
 - `password` _{string}_ - The user's password
@@ -389,6 +371,8 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if the user is not logged in
 - `400` if username or password is in the wrong format
+- `400` if `isPrivate` is not 'true' or 'false'
+- `400` if `isPrivate` is 'true' and the user is already private or if `isPrivate` is 'false' and the user is not private 
 - `409` if the username is already in use
 
 #### `DELETE /api/users` - Delete user
@@ -411,9 +395,10 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
+- `400` if `userId` is not specified
 - `404` if there is no user with the specified id
 
-#### `GET /api/users?usernameContains=KEYWORD` - Gets all users whose usernames contain the keyword
+#### `GET /api/users?username=KEYWORD` - Gets all users whose usernames contain the keyword
 
 **Returns** 
 
@@ -422,13 +407,14 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `usernameContains` is not specified
+- `400` if `username` is not specified
+- `400` if `username` is not valid
 
 #### `POST /api/refreets` - Add a Refreet of a specified Freet by the current user
 
 **Body**
 
-- `refreetedItem` _{Types.ObjectId}_ - The id of the Freet that was Refreeted
+- `freetId` _{Types.ObjectId}_ - The id of the Freet that was Refreeted
 
 **Returns** 
 
@@ -437,12 +423,12 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if  `refreetedItem` is not specified
-- `400` if the current user has already refreeted the Freet referenced by `refreetedItem`
+- `400` if  `freetId` is not specified
+- `400` if the current user has already refreeted the Freet referenced by `freetId`
 - `403` if there is no user logged in
-- `404` if there is no Freet with the id `refreetedItem` 
+- `404` if there is no Freet with the id `freetId` 
 
-#### `DELETE /api/refreets?refreetedItem=FREETID` - Delete a refreet of a specified Freet by the current user
+#### `DELETE /api/refreets?freetId=FREETID` - Delete a refreet of a Freet with the specified id by the current user
 
 **Returns** 
 
@@ -450,12 +436,12 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if  `refreetedItem` is not specified
-- `400` if the current user has not refreeted the Freet referenced by `refreetedItem`
+- `400` if  `freetId` is not specified
+- `400` if the current user has not refreeted the Freet referenced by `freetId`
 - `403` if there is no user logged in
-- `404` if there is no Freet with the id `refreetedItem` 
+- `404` if there is no Freet with the id `freetId` 
 
-#### `GET /api/refreets?refreetedItem=FREETID` - Get all the refreets of a particular Freet
+#### `GET /api/refreets?freetId=FREETID` - Get all the refreets of a particular Freet
 
 **Returns** 
 
@@ -464,14 +450,14 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if  `refreetedItem` is not specified
-- `404`  if there is no Freet with the id `refreetedItem`
+- `400` if  `freetId` is not specified
+- `404`  if there is no Freet with the id `freetId`
 
 #### `POST /api/likes` - Add a like of a specified Freet by the current user
 
 **Body**
 
-- `likedItem` _{Types.ObjectId}_ - The id of the Freet that was liked
+- `freetId` _{Types.ObjectId}_ - The id of the Freet that was liked
 
 **Returns** 
 
@@ -480,11 +466,12 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if the current user has already liked the Freet referenced by `likedItem`
+- `400` if the current user has already liked the Freet referenced by `freetId`
+- `400` if `freetId` is not specified
 - `403` if there is no user logged in
-- `404` if there is no Freet with the id `likedItem`
+- `404` if there is no Freet with the id `freetId`
 
-#### `DELETE /api/likes?likedItem=FREETID` - Delete a like of a specified Freet by the current user
+#### `DELETE /api/likes?freetId=FREETID` - Delete a like of a specified Freet by the current user
 
 **Returns** 
 
@@ -492,11 +479,12 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if the current user has not liked the Freet referenced by `likedItem`
+- `400` if the current user has not liked the Freet referenced by `freetId`
+- `400` if `freetId` is not specified
 - `403` if there is no user logged in
-- `404` if no Freet with the id `likedItem` exists 
+- `404` if no Freet with the id `freetId` exists 
 
-#### `GET /api/likes?likedItem=FREETID` - Get all the likes of a particular Freet
+#### `GET /api/likes?freetId=FREETID` - Get all the likes of a particular Freet
 
 **Returns** 
 
@@ -505,13 +493,14 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `404` if no Freet with the id `likedItem` exists 
+- `400` if  `freetId` is not specified
+- `404` if no Freet with the id `freetId` exists 
 
 #### `POST /api/downvotes` - Add a downvote of a specified Freet by the current user
 
 **Body**
 
-- `downvotedItem` _{Types.ObjectId}_ - The id of the Freet that was downvoted
+- `freetId` _{Types.ObjectId}_ - The id of the Freet that was downvoted
 
 **Returns** 
 
@@ -520,12 +509,12 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if  `downvotedItem` is not specified
-- `400` if the current user has already downvoted the Freet referenced by  `downvotedItem` 
+- `400` if  `freetId` is not specified
+- `400` if the current user has already downvoted the Freet referenced by  `freetId` 
 - `403` if there is no user logged in
-- `404` if there is no Freet with the given id  `downvotedItem` 
+- `404` if there is no Freet with the given id  `freetId` 
 
-#### `DELETE /api/downvotes?downvotedItem=FREETID` - Delete a downvote of a specified Freet by the current user
+#### `DELETE /api/downvotes?freetId=FREETID` - Delete a downvote of a specified Freet by the current user
 
 **Returns** 
 
@@ -533,12 +522,12 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `downvotedItem`  is not specified
-- `400` if the current user has not downvoted the Freet referenced by `downvotedItem` 
+- `400` if `freetId`  is not specified
+- `400` if the current user has not downvoted the Freet referenced by `freetId` 
 - `403` if there is no user logged in
-- `404` if no Freet with the id `downvotedItem` exists 
+- `404` if no Freet with the id `freetId` exists 
 
-#### `GET /api/downvotes?downvotedItem=FREETID` - Get all the downvotes of a particular Freet
+#### `GET /api/downvotes?freetId=FREETID` - Get all the downvotes of a particular Freet
 
 **Returns** 
 
@@ -547,14 +536,35 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if  `downvotedItem` is not specified
-- `404` if there is no Freet with `downvotedItem` as an id 
+- `400` if  `freetId` is not specified
+- `404` if there is no Freet with `freetId` as an id 
+
+#### `PUT /api/follows` - The current user responds to a follow request and updates the follow object
+
+**Body**
+
+- `requestedUserId` _{Types.ObjectId}_ - The id of the user that sent the follow request
+- `hasAcceptedFollowRequest` _{string}_ - Whether the current user is accepting the request
+
+**Returns** 
+
+- A success message
+- An object with the updated follow's details
+
+**Throws**
+
+- `400` if `requestedUserId` is not specified
+- `400` if the user with`requestedUserId` has not made a request to the current user
+- `400` if the follow request already has a response
+- `400` if `hasAcceptedFollowRequest` is not `true` or `false`
+- `403` if there is no user logged in
+- `404` if no user with the id `requestedUserId` exists 
 
 #### `POST /api/follows` - The current user follows another user
 
 **Body**
 
-- `userBeingFollowed` _{Types.ObjectId}_ - The id of the user that is being followed
+- `followedUser` _{Types.ObjectId}_ - The id of the user that is being followed
 
 **Returns** 
 
@@ -563,10 +573,10 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `userBeingFollowed` is not specified
-- `400` if the current user has already followed the user with the id `userBeingFollowed`
+- `400` if `followedUser` is not specified
+- `400` if the current user has already followed the user with the id `followedUser`
 - `403` if there is no user logged in
-- `404` if no user with the id `userBeingFollowed` exists 
+- `404` if no user with the id `followedUser` exists 
 
 #### `DELETE /api/follows?followedUser=USERID` - The current user unfollows another user
 
@@ -608,13 +618,17 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `400` if `notificationType` is not 'follow', 'follow_request', 'like', 'refreet', or 'comment'
+- `400` if  `notificationReceiver` is not specified
+- `400` if  notification is not structured well (like, comment and refreet require `notificationFreet` while follows do not)
+- `403` if there is no user logged in
 - `404` if there is no user with the id `notificationReceiver`
+- `404` if there is no freet with the id `notificationFreet`
 
 #### `PUT /api/notifications/:notificationId` - Updates a specific notification
 
 **Body** 
 
-- `accepted_status` _{boolean}_ - Whether the user has accepted the follow request pertaining to a notification
+- `hasAcceptedFollowRequest` _{string}_ - Whether the user has accepted the follow request pertaining to a notification
 
 **Returns** 
 
@@ -623,8 +637,9 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `400` if `accepted_status` is not specified
+- `400` if `hasAcceptedFollowRequest` is not specified
 - `403` if there is no user logged in
+- `403` if current user logged in is not the notification receiver
 - `404` if there is no notification with the specified id
 
 #### `GET /api/notifications` - Get all notifications received by the current user
@@ -653,7 +668,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Body** 
 
-- `freetToHide` _{Types.ObjectId}_ - The id of the Freet that is being hidden
+- `freetId` _{Types.ObjectId}_ - The id of the Freet that is being hidden
 
 **Returns** 
 
@@ -662,5 +677,6 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
+- `400` if `freetId` is not specified
 - `403` if there is no user logged in
-- `404` if freetToHide does not exist
+- `404` if freet with id`freetId` does not exist

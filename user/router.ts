@@ -171,6 +171,11 @@ router.get(
   ],
   async (req: Request, res: Response) => {
     const username = req.query.username as string;
+    if (!username) {
+      res.status(400).json({error: 'Username must be nonempty.'});
+      return;
+    }
+
     const users = await UserCollection.findManyByUsername(username);
     const response = users.map(util.constructUserResponse);
     res.status(200).json(response);
