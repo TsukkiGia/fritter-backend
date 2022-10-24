@@ -453,6 +453,33 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` if  `freetId` is not specified
 - `404`  if there is no Freet with the id `freetId`
 
+#### `GET /api/refreets?userId=USERID` - Get all the refreets for a particular user
+
+**Returns** 
+
+- A success message
+- An array of Refreets and their details, each as an object
+
+**Throws**
+
+- `400` if  `userId` is not specified
+- `404`  if there is no Freet with the id `userId`
+
+#### `PUT /api/refreets?freetId=FREETID` - Updates all the refreets of a particular Freet
+
+**Body**
+
+- `freetId` _{Types.ObjectId}_ - The id of the Freet that was refreeted
+
+**Returns** 
+
+- A success message
+
+**Throws**
+
+- `400` if  `freetId` is not specified
+- `404`  if there was never a Freet with the id `freetId`
+
 #### `POST /api/likes` - Add a like of a specified Freet by the current user
 
 **Body**
