@@ -9,7 +9,7 @@ export type Notification = {
   notificationTime: Date;
   notificationSender: Types.ObjectId;
   notificationFreet: Types.ObjectId;
-  hasAcceptedFollowRequest: boolean;
+  hasAcceptedFollowRequest: string;
 };
 
 const NotificationSchema = new Schema({
@@ -33,7 +33,7 @@ const NotificationSchema = new Schema({
     type: Schema.Types.ObjectId
   },
   hasAcceptedFollowRequest: {
-    type: Boolean
+    type: String
   }
 });
 

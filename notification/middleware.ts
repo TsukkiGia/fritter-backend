@@ -2,12 +2,13 @@ import type {Request, Response, NextFunction} from 'express';
 import NotificationCollection from './collection';
 import UserCollection from '../user/collection';
 import {Types} from 'mongoose';
+import FreetCollection from '../freet/collection';
 
 const doesReceivingUserExist = async (req: Request, res: Response, next: NextFunction) => {
   const receivingUser = req.body.notificationReceiver as string;
   if (!receivingUser) {
     res.status(400).json({
-      error: 'Provided receiving user username must be nonempty.'
+      error: 'Provided receiving user id must be nonempty.'
     });
     return;
   }
@@ -59,11 +60,11 @@ const isNotificationModifierValid = async (req: Request, res: Response, next: Ne
   next();
 };
 
-const isNotificationStatusValid = async (req: Request, res: Response, next: NextFunction) => {
+const isNotificationFollowRequestAnswerValid = async (req: Request, res: Response, next: NextFunction) => {
   const hasAcceptedFollowRequest = req.body.hasAcceptedFollowRequest as string;
   if (hasAcceptedFollowRequest !== 'true' && hasAcceptedFollowRequest !== 'false') {
     res.status(400).json({
-      error: 'Notification status is invalid.'
+      error: 'Notification follow request response is invalid.'
     });
     return;
   }
@@ -73,19 +74,11 @@ const isNotificationStatusValid = async (req: Request, res: Response, next: Next
 
 const isNotificationFormattedWell = async (req: Request, res: Response, next: NextFunction) => {
   const notificationType = req.body.notificationType as string;
-  const notificationReceiver = req.body.notificationReceiver as string;
   const notificationFreet = req.body.notificationFreet as string;
 
   if (!notificationType) {
     res.status(400).json({
       error: 'Provided notification type must be nonempty.'
-    });
-    return;
-  }
-
-  if (!notificationReceiver) {
-    res.status(400).json({
-      error: 'Provided notification receiver must be nonempty.'
     });
     return;
   }
@@ -104,6 +97,15 @@ const isNotificationFormattedWell = async (req: Request, res: Response, next: Ne
       });
       return;
     }
+
+    const isValid = Types.ObjectId.isValid(notificationFreet);
+    const freet = isValid ? await FreetCollection.findOne(notificationFreet) : '';
+    if (!freet) {
+      res.status(400).json({
+        error: 'Provided notification freet does not exist.'
+      });
+      return;
+    }
   } else {
     res.status(400).json({
       error: 'Provided notification type is invalid.'
@@ -119,5 +121,5 @@ export {
   doesReceivingUserExist,
   isNotificationFormattedWell,
   isNotificationModifierValid,
-  isNotificationStatusValid
+  isNotificationFollowRequestAnswerValid
 };

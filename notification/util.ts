@@ -17,14 +17,6 @@ type FollowNotificationResponse = {
   notificationType: string;
   notificationTime: string;
   notificationSender: string;
-};
-
-type PrivateFollowNotificationResponse = {
-  _id: string;
-  notificationReceiver: string;
-  notificationType: string;
-  notificationTime: string;
-  notificationSender: string;
   hasAcceptedFollowRequest: string;
 };
 
@@ -52,21 +44,11 @@ const constructFollowNotificationResponse = (notification: HydratedDocument<Noti
     notificationReceiver: notification.notificationReceiver.toString(),
     notificationType: notification.notificationType.toString(),
     notificationTime: formatDate(notification.notificationTime),
-    notificationSender: notification.notificationSender.toString()
-  });
-
-const constructFollowRequestNotificationResponse = (notification: HydratedDocument<Notification>): PrivateFollowNotificationResponse =>
-  ({
-    _id: notification._id.toString(),
-    notificationReceiver: notification.notificationReceiver.toString(),
-    notificationType: notification.notificationType.toString(),
-    notificationTime: formatDate(notification.notificationTime),
     notificationSender: notification.notificationSender.toString(),
     hasAcceptedFollowRequest: notification.hasAcceptedFollowRequest === undefined ? '' : notification.hasAcceptedFollowRequest.toString()
   });
 
 export {
   constructFollowNotificationResponse,
-  constructFreetNotificationResponse,
-  constructFollowRequestNotificationResponse
+  constructFreetNotificationResponse
 };

@@ -18,7 +18,21 @@ class NotificationCollection {
     return notification;
   }
 
-  static async addFollowNotification(receivingUser: string, sendingUser: string, notifType: string): Promise<HydratedDocument<Notification>> {
+  static async addFollowNotification(receivingUser: string, sendingUser: string, notifType: string, isFollowRequest: boolean): Promise<HydratedDocument<Notification>> {
+    if (isFollowRequest) {
+      const notification = new NotificationModel(
+        {
+          notificationReceiver: receivingUser,
+          notificationType: notifType,
+          notificationTime: Date.now(),
+          notificationSender: sendingUser,
+          hasAcceptedFollowRequest: 'received'
+        }
+      );
+      await notification.save();
+      return notification;
+    }
+
     const notification = new NotificationModel(
       {
         notificationReceiver: receivingUser,
@@ -31,7 +45,7 @@ class NotificationCollection {
     return notification;
   }
 
-  static async updateFollowRequestNotification(notificationId: Types.ObjectId, response: boolean): Promise<HydratedDocument<Notification>> {
+  static async updateFollowRequestNotification(notificationId: Types.ObjectId, response: string): Promise<HydratedDocument<Notification>> {
     const notification = await NotificationModel.findOne({_id: notificationId});
     notification.hasAcceptedFollowRequest = response;
     await notification.save();

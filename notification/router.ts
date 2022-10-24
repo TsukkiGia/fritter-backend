@@ -21,7 +21,9 @@ router.post(
     const notificationReceiver = req.body.notificationReceiver as string;
     const notificationFreet = req.body.notificationFreet as string;
     if (notificationType === 'follow' || notificationType === 'followrequest') {
-      const notification = await NotificationCollection.addFollowNotification(notificationReceiver, userId, notificationType);
+      const isFollowRequest = notificationType === 'followrequest';
+      console.log(isFollowRequest);
+      const notification = await NotificationCollection.addFollowNotification(notificationReceiver, userId, notificationType, isFollowRequest);
       res.status(201).json({
         message: `You successfully made a ${notificationType} notification.`,
         notification: util.constructFollowNotificationResponse(notification)
@@ -47,10 +49,8 @@ router.get(
     const responses = [];
     for (const notification of allNotifications) {
       const {notificationType} = notification;
-      if (notificationType === 'follow') {
+      if (notificationType === 'follow' || notificationType === 'followrequest') {
         responses.push(util.constructFollowNotificationResponse(notification));
-      } else if (notificationType === 'followrequest') {
-        responses.push(util.constructFollowRequestNotificationResponse(notification));
       } else if (notificationType === 'like' || notificationType === 'refreet' || notificationType === 'comment') {
         responses.push(util.constructFreetNotificationResponse(notification));
       }
@@ -66,14 +66,13 @@ router.put(
     userValidator.isUserLoggedIn,
     notificationValidator.doesNotificationExist,
     notificationValidator.isNotificationModifierValid,
-    notificationValidator.isNotificationStatusValid
+    notificationValidator.isNotificationFollowRequestAnswerValid
   ],
   async (req: Request, res: Response, next: NextFunction) => {
-    const answer = req.body.hasAcceptedFollowRequest === 'true';
-    const notification = await NotificationCollection.updateFollowRequestNotification(new Types.ObjectId(req.params.notificationId), answer);
+    const notification = await NotificationCollection.updateFollowRequestNotification(new Types.ObjectId(req.params.notificationId), req.body.hasAcceptedFollowRequest);
     res.status(200).json({
       message: `You responded ${req.body.hasAcceptedFollowRequest as string} to follow request successfully.`,
-      notification: util.constructFollowRequestNotificationResponse(notification)
+      notification: util.constructFollowNotificationResponse(notification)
     });
   }
 );
