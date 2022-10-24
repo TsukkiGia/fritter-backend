@@ -1,6 +1,7 @@
 import type {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
 import FreetCollection from '../freet/collection';
+import moment from 'moment';
 
 /**
  * Checks if a freet with freetId is req.params exists
@@ -86,9 +87,72 @@ const isValidFreetModifier = async (req: Request, res: Response, next: NextFunct
   next();
 };
 
+const isValidDate = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.query.deadlineYear === '' || req.query.deadlineMonth === '' || req.query.deadlineDay === '') {
+    res.status(400).json({
+      error: 'Missing a date parameter.'
+    });
+    return;
+  }
+
+  const day = (req.query.deadlineDay as string).length === 1 ? '0' + (req.query.deadlineDay as string) : req.query.deadlineDay as string;
+  const month = (req.query.deadlineMonth as string).length === 1 ? '0' + (req.query.deadlineMonth as string) : req.query.deadlineMonth as string;
+  const year = req.query.deadlineYear as string;
+  const dateString = month + '/' + day + '/' + year;
+  const isValid = moment(dateString, 'MM/DD/YYYY', true).isValid();
+  if (!isValid) {
+    res.status(401).json({
+      error: 'Invalid date.'
+    });
+    return;
+  }
+
+  next();
+};
+
+const isValidComment = async (req: Request, res: Response, next: NextFunction) => {
+  const commentPropagation = req.body.commentPropagation as string;
+  if (commentPropagation !== 'true' && commentPropagation !== 'false') {
+    res.status(401).json({
+      error: 'Invalid comment propagation.'
+    });
+    return;
+  }
+
+  next();
+};
+
+const isValidToDelete = async (req: Request, res: Response, next: NextFunction) => {
+  const toDelete = req.body.toDelete as string;
+  if (toDelete && toDelete !== 'true' && toDelete !== 'false') {
+    res.status(401).json({
+      error: 'Invalid to delete: must be true or false.'
+    });
+  }
+
+  next();
+};
+
+const isEditedFreetContentValid = async (req: Request, res: Response, next: NextFunction) => {
+  const {content} = req.body as {content: string};
+
+  if (content.length > 140) {
+    res.status(413).json({
+      error: 'Freet content must be no more than 140 characters.'
+    });
+    return;
+  }
+
+  next();
+};
+
 export {
   isValidFreetContent,
   isFreetExists,
   isValidFreetModifier,
-  doesFreetExistGeneral
+  doesFreetExistGeneral,
+  isValidDate,
+  isValidComment,
+  isValidToDelete,
+  isEditedFreetContentValid
 };

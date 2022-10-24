@@ -25,18 +25,32 @@ const router = express.Router();
  * @throws {404} - If no user has given authorId
  *
  */
+/**
+ * Get freets before a certain date.
+ *
+ * @name GET /api/freets?deadlineDay=DAY&deadlineMonth=MONTH&deadlineYear=YEAR
+ *
+ * @return {FreetResponse[]} - An array of freets created by user before a certain date
+ * @throws {400} - If authorId is not given
+ * @throws {404} - If no user has given authorId
+ *
+ */
 
-// Five possibilities
-
-// nothing - get all Freets
-// author - get all Freets by an author
-// author, deadline month, deadline day, deadline year and isDeleted status - get all Freets by an author posted before given date that
-// have the given deletion status
+/**
+ * Get freets with a certain keyword.
+ *
+ * @name GET /api/freets?freetContains=keyword
+ *
+ * @return {FreetResponse[]} - An array of freets created by user with a certain keyword
+ * @throws {400} - If authorId is not given
+ * @throws {404} - If no user has given authorId
+ *
+ */
 router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
     // Check if authorId query parameter was supplied
-    if (req.query.author !== undefined || req.query.deadlineYear !== undefined || req.query.freetContains !== undefined) {
+    if (req.query.author !== undefined || (req.query.deadlineYear !== undefined || req.query.deadlineMonth !== undefined || req.query.deadlineDay !== undefined) || req.query.freetContains !== undefined) {
       next();
       return;
     }
@@ -46,7 +60,32 @@ router.get(
     res.status(200).json(response);
   },
   async (req: Request, res: Response, next: NextFunction) => {
-    if (req.query.deadlineYear !== undefined || req.query.freetContains !== undefined) {
+    if (req.query.author !== undefined || (req.query.deadlineYear !== undefined || req.query.deadlineMonth !== undefined || req.query.deadlineDay !== undefined)) {
+      next();
+      return;
+    }
+
+    const keyword = req.query.freetContains as string;
+    if (!keyword.trim()) {
+      res.status(400).json({
+        error: 'Keyword must be at least one character long.'
+      });
+      return;
+    }
+
+    if (keyword.length > 140) {
+      res.status(413).json({
+        error: 'Keyword is too long'
+      });
+      return;
+    }
+
+    const freets = await util.hideFreetsFromPrivateUsers(await FreetCollection.findManyByContents(keyword));
+    const response = freets.map(util.constructFreetResponse);
+    res.status(200).json(response);
+  },
+  async (req: Request, res: Response, next: NextFunction) => {
+    if ((req.query.deadlineYear !== undefined || req.query.deadlineMonth !== undefined || req.query.deadlineDay !== undefined)) {
       next();
       return;
     }
@@ -56,21 +95,12 @@ router.get(
     res.status(200).json(response);
   },
   [
-    userValidator.isUserLoggedIn
+    userValidator.isUserLoggedIn,
+    freetValidator.isValidDate
   ],
   async (req: Request, res: Response, next: NextFunction) => {
-    if (req.query.freetContains !== undefined) {
-      next();
-      return;
-    }
-
     const deadlineDate = new Date(parseInt(req.query.deadlineYear as string, 10), parseInt(req.query.deadlineMonth as string, 10), (parseInt(req.query.deadlineDay as string, 10), 0, 0, 0, 0));
     const freets = await FreetCollection.findFreetsForANBDeletion(req.session.userId, deadlineDate);
-    const response = freets.map(util.constructFreetResponse);
-    res.status(200).json(response);
-  },
-  async (req: Request, res: Response, next: NextFunction) => {
-    const freets = await util.hideFreetsFromPrivateUsers(await FreetCollection.findManyByContents(req.query.freetContains as string));
     const response = freets.map(util.constructFreetResponse);
     res.status(200).json(response);
   }
@@ -144,6 +174,8 @@ router.post(
   '/:freetId/comments',
   [
     userValidator.isUserLoggedIn,
+    freetValidator.isFreetExists,
+    freetValidator.isValidComment,
     freetValidator.isValidFreetContent
   ],
   async (req: Request, res: Response) => {
@@ -175,7 +207,9 @@ router.put(
   [
     userValidator.isUserLoggedIn,
     freetValidator.isFreetExists,
-    freetValidator.isValidFreetModifier
+    freetValidator.isValidFreetModifier,
+    freetValidator.isValidToDelete,
+    freetValidator.isEditedFreetContentValid
   ],
   async (req: Request, res: Response) => {
     const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content, req.body.toDelete, req.body.viewer);
