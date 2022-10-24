@@ -6,7 +6,7 @@ import {Types} from 'mongoose';
 const isCurrentUserFollowing = async (req: Request, res: Response, next: NextFunction) => {
   const follow = await FollowCollection.findFollowRecord(req.session.userId, req.query.followedUser as string);
   if (!follow) {
-    res.status(400).json({
+    res.status(401).json({
       error: {
         followNotFound: `Current user has not followed user with ID ${req.query.followedUser as string}`
       }
@@ -20,9 +20,10 @@ const isCurrentUserFollowing = async (req: Request, res: Response, next: NextFun
 const isCurrentUserNotFollowing = async (req: Request, res: Response, next: NextFunction) => {
   const follow = await FollowCollection.findFollowRecord(req.session.userId, req.body.followedUser as string);
   if (follow) {
-    res.status(400).json({
+    const message = follow.hasAcceptedFollowRequest ? `Current user has already made a request to followed user with ID ${req.body.followedUser as string}` : `Current user has already followed user with ID ${req.body.followedUser as string}`;
+    res.status(401).json({
       error: {
-        followNotFound: `Current user has already followed user with ID ${req.body.followedUser as string}`
+        followAlreadyExists: message
       }
     });
     return;
@@ -53,19 +54,66 @@ const doesUserToBeFollowedExist = async (req: Request, res: Response, next: Next
 };
 
 const doesRequestedUserExist = async (req: Request, res: Response, next: NextFunction) => {
-  const followedUser = req.body.requestedUserId as string;
-  if (!followedUser) {
+  const requestedUser = req.body.requestedUserId as string;
+  if (!requestedUser) {
     res.status(400).json({
-      error: 'Provided followed user id must be nonempty.'
+      error: 'Provided id of user who requested to follow must be nonempty.'
     });
     return;
   }
 
-  const validFormat = Types.ObjectId.isValid(followedUser);
-  const user = validFormat ? await UserCollection.findOneByUserId(followedUser) : '';
+  const validFormat = Types.ObjectId.isValid(requestedUser);
+  const user = validFormat ? await UserCollection.findOneByUserId(requestedUser) : '';
   if (!user) {
     res.status(404).json({
-      error: `A user with ID ${followedUser} does not exist.`
+      error: `A user with ID ${requestedUser} does not exist.`
+    });
+    return;
+  }
+
+  next();
+};
+
+const doesRequestExist = async (req: Request, res: Response, next: NextFunction) => {
+  const requestedUser = req.body.requestedUserId as string;
+  const currentUser = req.session.userId as string;
+  const follow = await FollowCollection.findFollowRecord(requestedUser, currentUser);
+  if (!follow || follow.hasAcceptedFollowRequest === undefined || follow.hasAcceptedFollowRequest === null) {
+    res.status(401).json({
+      error: `User ${requestedUser} has not requested a follow.`
+    });
+    return;
+  }
+
+  next();
+};
+
+const hasRequestBeenRespondedTo = async (req: Request, res: Response, next: NextFunction) => {
+  const requestedUser = req.body.requestedUserId as string;
+  const currentUser = req.session.userId as string;
+  const follow = await FollowCollection.findFollowRecord(requestedUser, currentUser);
+  if (follow.hasAcceptedFollowRequest === 'true' || follow.hasAcceptedFollowRequest === 'false') {
+    res.status(401).json({
+      error: `You have already responded to user ${requestedUser} follow request.`
+    });
+    return;
+  }
+
+  next();
+};
+
+const isValidRequestResponse = async (req: Request, res: Response, next: NextFunction) => {
+  const response = req.body.hasAcceptedFollowRequest as string;
+  if (!response) {
+    res.status(400).json({
+      error: 'Your follow request response must nonempty.'
+    });
+    return;
+  }
+
+  if (response !== 'true' && response !== 'false') {
+    res.status(401).json({
+      error: 'Your follow request response must either be true or false.'
     });
     return;
   }
@@ -77,5 +125,8 @@ export {
   isCurrentUserFollowing,
   isCurrentUserNotFollowing,
   doesUserToBeFollowedExist,
-  doesRequestedUserExist
+  doesRequestedUserExist,
+  doesRequestExist,
+  hasRequestBeenRespondedTo,
+  isValidRequestResponse
 };

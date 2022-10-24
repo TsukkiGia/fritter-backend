@@ -8,6 +8,9 @@ import UserCollection from '../user/collection';
 
 const router = express.Router();
 
+/**
+ * Get the following list of a current user. Should not fetch follow requests that have not been answered
+ */
 router.get(
   '/',
   [
@@ -20,14 +23,20 @@ router.get(
   }
 );
 
+/**
+ * Used to respond to follow requests.
+ */
 router.put(
   '/',
   [
     userValidator.isUserLoggedIn,
-    followValidator.doesRequestedUserExist
+    followValidator.doesRequestedUserExist,
+    followValidator.doesRequestExist,
+    followValidator.hasRequestBeenRespondedTo,
+    followValidator.isValidRequestResponse
   ],
   async (req: Request, res: Response, next: NextFunction) => {
-    const follow = await FollowCollection.respondToFollowRequest(req.session.userId, req.body.requestedUserId, req.body.hasAcceptedFollowRequest === 'true');
+    const follow = await FollowCollection.respondToFollowRequest(req.session.userId, req.body.requestedUserId, req.body.hasAcceptedFollowRequest);
     const message = req.body.hasAcceptedFollowRequest === 'true' ? 'You successfully accepted a follow request' : 'You successfully rejected a follow request';
     res.status(201).json({
       message,
@@ -55,14 +64,6 @@ router.post(
   }
 );
 
-/**
-   * Deletes a like by a user for a particular Freet
-   *
-   * @name DELETE /api/likes?freetId=id
-   *
-   * @param {string} freetId - The id of the Freet being unliked
-   * @return {string} - A success message
-   */
 router.delete(
   '/',
   [
@@ -74,7 +75,7 @@ router.delete(
     const userId = (req.session.userId as string) ?? '';
     await FollowCollection.unfollowUser(req.query.followedUser as string, userId);
     res.status(200).json({
-      message: 'You unfollowed a user successfully.'
+      message: 'You removed your follow successfully.'
     });
   }
 );

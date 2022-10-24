@@ -5,7 +5,7 @@ export type Follow = {
   _id: Types.ObjectId;
   followedUser: Types.ObjectId;
   follower: Types.ObjectId;
-  hasAcceptedFollowRequest: boolean;
+  hasAcceptedFollowRequest: string;
 };
 
 const FollowSchema = new Schema({
@@ -18,7 +18,7 @@ const FollowSchema = new Schema({
     required: true
   },
   hasAcceptedFollowRequest: {
-    type: Boolean
+    type: String
   }
 });
 

@@ -5,8 +5,9 @@ import FollowModel from './model';
 class FollowCollection {
   static async followUser(followedUser: string, follower: string, isPrivate: boolean): Promise<HydratedDocument<Follow>> {
     if (isPrivate) {
-      const follow = new FollowModel({followedUser, follower, hasAcceptedFollowRequest: false});
+      const follow = new FollowModel({followedUser, follower, hasAcceptedFollowRequest: 'sent'});
       await follow.save();
+      return follow;
     }
 
     const follow = new FollowModel({followedUser, follower});
@@ -14,13 +15,8 @@ class FollowCollection {
     return follow;
   }
 
-  static async respondToFollowRequest(followedUser: string, follower: string, response: boolean) {
-    console.log('followedUser');
-    console.log(followedUser);
-    console.log('follower');
-    console.log(follower);
+  static async respondToFollowRequest(followedUser: string, follower: string, response: string) {
     const follow = await FollowModel.findOne({followedUser, follower});
-    console.log(follow);
     follow.hasAcceptedFollowRequest = response;
     await follow.save();
     return follow;
@@ -32,7 +28,7 @@ class FollowCollection {
   }
 
   static async getFollowingList(follower: string): Promise<Array<HydratedDocument<Follow>>> {
-    return FollowModel.find({follower, hasAcceptedFollowRequest: {$ne: false}});
+    return FollowModel.find({follower, hasAcceptedFollowRequest: {$nin: ['sent', 'false']}});
   }
 
   static async findFollowRecord(follower: string, followedUser: string): Promise<HydratedDocument<Follow>> {
