@@ -30,7 +30,7 @@ function searchFreets(fields) {
 }
 
 function aNewBeginning(fields) {
-  fetch(`/api/freets?deadlineDay=${fields.deadlineDay}&deadlineMonth=${fields.deadlineMonth}&deadlineYear=${fields.deadlineYear}`)
+  fetch('/api/freets', {method: 'PUT', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
     .then(showResponse)
     .catch(showResponse);
 }
@@ -43,6 +43,12 @@ function getFreet(fields) {
 
 function getFreetComments(fields) {
   fetch(`/api/freets/${fields.id}/comments`)
+    .then(showResponse)
+    .catch(showResponse);
+}
+
+function updateFreetComments(fields) {
+  fetch(`/api/freets/${fields.id}/comments`, {method: 'PUT', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
     .then(showResponse)
     .catch(showResponse);
 }

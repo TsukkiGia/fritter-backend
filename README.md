@@ -191,11 +191,17 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `404` if `author` is not a recognized username of any user
 
-#### `GET /api/freets?deadlineDay=DAY&deadlineMonth=MONTH&deadlineYear=YEAR` - Get freets by current user for A New Beginning
+#### `PUT /api/freets` - Updated freets by current user posted before the given date
+
+**Body**
+
+- `deadlineDay` _{string}_ - Day of deadline
+- `deadlineMonth` _{string}_ - Month of deadline
+- `deadlineYear` {string} - Year of deadline
 
 **Returns**
 
-- An array of freets created by current user that were posted before the deadline date
+- A success message
 
 **Throws**
 
@@ -258,7 +264,7 @@ This renders the `index.html` file that will be used to interact with the backen
 **Body**
 
 - `content` _{string}_ - The content of the freet
-- `parentFreet` _{string}_ - The id of the original freet
+- `freetId` _{string}_ - The id of the original freet
 - `commentPropagation` {string} - Whether the comment should be propagated to followers' feeds
 
 **Returns**
@@ -274,6 +280,23 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` If `commentPropagation` is not specified
 - `400` If `commentPropagation` is not 'true' or 'false'
 - `413` If the freet content is more than 140 characters long
+
+#### `PUT /api/freets/:freetId/comments` - Updates deletion status of all comment freets for a Freet
+
+**Body**
+
+- `freetId` _{string}_ - The id of the original freet
+- `toDelete` {string} - Whether the comments should be deleted
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `400` if `toDelete` is not `true` or `false`
+- `403` if the user is not logged in
+- `404` if no Freet with the id `freetId` exists
 
 #### `PUT /api/freets/:freetId?` - Update an existing freet
 

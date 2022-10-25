@@ -22,7 +22,6 @@ router.post(
     const notificationFreet = req.body.notificationFreet as string;
     if (notificationType === 'follow' || notificationType === 'followrequest') {
       const isFollowRequest = notificationType === 'followrequest';
-      console.log(isFollowRequest);
       const notification = await NotificationCollection.addFollowNotification(notificationReceiver, userId, notificationType, isFollowRequest);
       res.status(201).json({
         message: `You successfully made a ${notificationType} notification.`,

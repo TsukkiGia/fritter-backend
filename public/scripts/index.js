@@ -42,6 +42,7 @@ const formsAndHandlers = {
   'search-freets': searchFreets,
   'get-freet': getFreet,
   'get-freet-comments': getFreetComments,
+  'update-freet-comments': updateFreetComments,
   'view-freets-by-author': viewFreetsByAuthor,
   'create-freet': createFreet,
   'edit-freet': editFreet,

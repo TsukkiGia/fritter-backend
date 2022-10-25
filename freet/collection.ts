@@ -68,11 +68,24 @@ class FreetCollection {
   }
 
   // Gets freets that are not deleted before a specific date
-  static async findFreetsForANBDeletion(userId: string, deadlineDate: Date): Promise<Array<HydratedDocument<Freet>>> {
-    return FreetModel.find({authorId: userId, timeOfDeletion: null,
+  static async findFreetsForANBDeletion(userId: string, deadlineDate: Date): Promise<boolean> {
+    const freets = await FreetModel.updateMany({authorId: userId, timeOfDeletion: null,
       dateCreated: {
         $lt: deadlineDate
-      }});
+      }}, {$set: {timeOfDeletion: new Date()}});
+    return freets !== null;
+  }
+
+  static async updateCommentFreetsDeletion(parentFreetID: string, toDelete: boolean): Promise<boolean> {
+    if (!toDelete) {
+      const freets = await FreetModel.updateMany({parentFreet: parentFreetID}, {$set: {timeOfDeletion: null}});
+      return freets !== null;
+    }
+    console.log(parentFreetID);
+    console.log(await FreetModel.find({parentFreet: parentFreetID}));
+
+    const freets = await FreetModel.updateMany({parentFreet: parentFreetID}, {$set: {timeOfDeletion: new Date()}});
+    return freets !== null;
   }
 
   /**

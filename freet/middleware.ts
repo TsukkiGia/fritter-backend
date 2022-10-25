@@ -114,16 +114,16 @@ const isValidFreetModifier = async (req: Request, res: Response, next: NextFunct
 };
 
 const isValidDate = async (req: Request, res: Response, next: NextFunction) => {
-  if (req.query.deadlineYear === '' || req.query.deadlineMonth === '' || req.query.deadlineDay === '') {
+  if (req.body.deadlineYear === '' || req.body.deadlineMonth === '' || req.body.deadlineDay === '') {
     res.status(400).json({
       error: 'Missing a date parameter.'
     });
     return;
   }
 
-  const day = (req.query.deadlineDay as string).length === 1 ? '0' + (req.query.deadlineDay as string) : req.query.deadlineDay as string;
-  const month = (req.query.deadlineMonth as string).length === 1 ? '0' + (req.query.deadlineMonth as string) : req.query.deadlineMonth as string;
-  const year = req.query.deadlineYear as string;
+  const day = (req.body.deadlineDay as string).length === 1 ? '0' + (req.body.deadlineDay as string) : req.body.deadlineDay as string;
+  const month = (req.body.deadlineMonth as string).length === 1 ? '0' + (req.body.deadlineMonth as string) : req.body.deadlineMonth as string;
+  const year = req.body.deadlineYear as string;
   const dateString = month + '/' + day + '/' + year;
   const isValid = moment(dateString, 'MM/DD/YYYY', true).isValid();
   if (!isValid) {

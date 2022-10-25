@@ -51,7 +51,7 @@ router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
     // Check if authorId query parameter was supplied
-    if (req.query.author !== undefined || (req.query.deadlineYear !== undefined || req.query.deadlineMonth !== undefined || req.query.deadlineDay !== undefined) || req.query.freetContains !== undefined) {
+    if (req.query.author !== undefined || req.query.freetContains !== undefined) {
       next();
       return;
     }
@@ -61,7 +61,7 @@ router.get(
     res.status(200).json(response);
   },
   async (req: Request, res: Response, next: NextFunction) => {
-    if (req.query.author !== undefined || (req.query.deadlineYear !== undefined || req.query.deadlineMonth !== undefined || req.query.deadlineDay !== undefined)) {
+    if (req.query.author !== undefined) {
       next();
       return;
     }
@@ -86,11 +86,6 @@ router.get(
     res.status(200).json(response);
   },
   async (req: Request, res: Response, next: NextFunction) => {
-    if ((req.query.deadlineYear !== undefined || req.query.deadlineMonth !== undefined || req.query.deadlineDay !== undefined)) {
-      next();
-      return;
-    }
-
     const user = await UserCollection.findOneByUsername(req.query.author as string);
     if (!user) {
       res.status(404).json({error: 'User with this username does not exist.'});
@@ -100,18 +95,35 @@ router.get(
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
     const response = authorFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
-  },
+  }
+);
+
+router.put('/',
   [
     userValidator.isUserLoggedIn,
     freetValidator.isValidDate
   ],
   async (req: Request, res: Response, next: NextFunction) => {
-    const deadlineDate = new Date(parseInt(req.query.deadlineYear as string, 10), parseInt(req.query.deadlineMonth as string, 10), (parseInt(req.query.deadlineDay as string, 10), 0, 0, 0, 0));
-    const freets = await FreetCollection.findFreetsForANBDeletion(req.session.userId, deadlineDate);
-    const response = freets.map(util.constructFreetResponse);
-    res.status(200).json(response);
-  }
-);
+    const deadlineDate = new Date(parseInt(req.body.deadlineYear as string, 10), parseInt(req.body.deadlineMonth as string, 10), (parseInt(req.body.deadlineDay as string, 10), 0, 0, 0, 0));
+    await FreetCollection.findFreetsForANBDeletion(req.session.userId, deadlineDate);
+    res.status(201).json({
+      message: 'Multiple freets were updated successfully.'
+    });
+  });
+
+router.put('/:freetId/comments',
+  [
+    userValidator.isUserLoggedIn,
+    freetValidator.doesFreetExistGeneralDelete,
+    freetValidator.isValidToDelete
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const toDelete = req.body.toDelete === 'true';
+    await FreetCollection.updateCommentFreetsDeletion(req.params.freetId, toDelete);
+    res.status(201).json({
+      message: 'Multiple comment freets were updated successfully.'
+    });
+  });
 
 router.get(
   '/freetBin',
@@ -213,7 +225,21 @@ router.put(
   '/:freetId?',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.doesFreetExistGeneralDelete,
+    freetValidator.doesFreetExistGeneralDelete
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.body.content !== '' || req.body.toDelete !== '') {
+      next();
+      return;
+    }
+
+    const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content, req.body.toDelete, req.session.userId);
+    res.status(200).json({
+      message: 'Your freet was updated successfully.',
+      freet: util.constructFreetResponse(freet)
+    });
+  },
+  [
     freetValidator.isValidFreetModifier,
     freetValidator.isValidToDelete,
     freetValidator.isEditedFreetContentValid
