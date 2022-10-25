@@ -81,6 +81,7 @@ router.post(
   [
     userValidator.isUserLoggedOut,
     userValidator.isValidUsername,
+    userValidator.isValidDisplayName,
     userValidator.isUsernameNotAlreadyInUse,
     userValidator.isValidPassword
   ],

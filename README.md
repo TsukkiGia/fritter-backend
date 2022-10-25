@@ -374,7 +374,7 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if there is a user already logged in
-- `400` if username or password is in the wrong format
+- `400` if username, display name or password is in the wrong format
 - `409` if username is already in use
 
 #### `PUT /api/users` - Update a user's profile

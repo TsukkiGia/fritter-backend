@@ -44,6 +44,20 @@ const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+const isValidDisplayName = (req: Request, res: Response, next: NextFunction) => {
+  const displaynameRegex = /^\w+$/i;
+  if (!displaynameRegex.test(req.body.displayName)) {
+    res.status(400).json({
+      error: {
+        displayName: 'Display Name must be a nonempty alphanumeric string.'
+      }
+    });
+    return;
+  }
+
+  next();
+};
+
 /**
  * Checks if a password in req.body is valid, that is, at 6-50 characters long without any spaces
  */
@@ -225,5 +239,6 @@ export {
   isValidUsername,
   isValidPassword,
   doesUserExist,
-  isValidPrivacySetting
+  isValidPrivacySetting,
+  isValidDisplayName
 };
