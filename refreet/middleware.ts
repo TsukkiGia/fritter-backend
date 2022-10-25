@@ -42,6 +42,7 @@ const refreetDeletionStatus = async (req: Request, res: Response, next: NextFunc
     res.status(400).json({
       error: 'Invalid deletion status: must be true or false.'
     });
+    return;
   }
 
   next();
