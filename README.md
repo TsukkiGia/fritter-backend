@@ -181,7 +181,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - An array of all freets sorted in descending order by date modified
 
-#### `GET /api/freets?author=USERNAME` - Get freets by author
+#### `GET /api/freets?author=USERNAME` - Get freets and comments by author
 
 **Returns**
 
@@ -209,7 +209,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` if date is not valid
 - `403` if the user is not logged in
 
-#### `GET /api/freets/freetbin` - Get freets by author
+#### `GET /api/freets/freetbin` - Get freets in the freet bin of current user
 
 **Returns**
 
@@ -314,7 +314,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if the user is not logged in
 - `404` if no Freet with the id `freetId` exists
-- `403` if the user is not the author of the freet
+- `403` if the user is not the author of the freet and either `content` or `toDelete` are non-empty
 - `400` if the new freet content is empty or a stream of empty spaces
 - `400` If `toDelete` is not 'true' or 'false'
 - `413` if the new freet content is more than 140 characters long
@@ -652,7 +652,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if there is no user logged in
 
-#### `POST /api/notifications`
+#### `POST /api/notifications` - Add a notification
 
 **Body**
 
