@@ -81,8 +81,6 @@ class FreetCollection {
       const freets = await FreetModel.updateMany({parentFreet: parentFreetID}, {$set: {timeOfDeletion: null}});
       return freets !== null;
     }
-    console.log(parentFreetID);
-    console.log(await FreetModel.find({parentFreet: parentFreetID}));
 
     const freets = await FreetModel.updateMany({parentFreet: parentFreetID}, {$set: {timeOfDeletion: new Date()}});
     return freets !== null;
@@ -120,7 +118,7 @@ class FreetCollection {
    */
   static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Freet>>> {
     const author = await UserCollection.findOneByUsername(username);
-    return FreetModel.find({authorId: author._id, timeOfDeletion: null}).populate('authorId');
+    return FreetModel.find({authorId: author._id, timeOfDeletion: null, commentPropagation: {$ne: false}}).populate('authorId');
   }
 
   /**
